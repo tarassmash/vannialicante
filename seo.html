@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Reformas — блог и SEO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: owner's SEO desk — site score and checklist first, then article table, a two-column editor with a live score rail, plan, links, settings */
+:root {
+  --paper: #eceef0; --card: #ffffff; --ink: #18212b; --muted: #5b6672; --line: #d5dae0; --grid: #e6e9ed;
+  --lamp: #c4612f; --lamp-ink: #ffffff; --bar: #1d6a85; --soft: #e2e6ea; --serp: #1a0dab; --serpurl: #1e6b2f;
+  --good: #1f7a4d; --warn: #9a6200; --bad: #b42318;
+  --f-display: "Fraunces", Georgia, serif; --f-body: "Manrope", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #11161b; --card: #181f26; --ink: #e9edf0; --muted: #9aa6b1; --line: #2a343e; --grid: #222b34;
+  --lamp: #e2804e; --lamp-ink: #11161b; --bar: #6fb6d0; --soft: #202932; --serp: #8ab4f8; --serpurl: #7fd19b;
+  --good: #5fd39a; --warn: #f0b44c; --bad: #ff8a7a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #11161b; --card: #181f26; --ink: #e9edf0; --muted: #9aa6b1; --line: #2a343e; --grid: #222b34;
+  --lamp: #e2804e; --lamp-ink: #11161b; --bar: #6fb6d0; --soft: #202932; --serp: #8ab4f8; --serpurl: #7fd19b;
+  --good: #5fd39a; --warn: #f0b44c; --bad: #ff8a7a; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--f-body); }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--lamp); outline-offset: 2px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: 18px; padding-block: 18px 60px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.top h1 { margin: 0; font: 400 26px var(--f-display); }
+.top h1 small { font: 500 11px var(--f-mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; }
+.btn { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+.btn:hover { border-color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.solid { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.btn.lamp { background: var(--lamp); color: var(--lamp-ink); border-color: var(--lamp); }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; }
+.btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+input[type=text], input[type=password], input[type=number], input[type=url], select, textarea { background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+textarea { resize: vertical; line-height: 1.5; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+.label { font: 500 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.hint { color: var(--muted); font-size: 13.5px; margin: 0; }
+.msg { font-size: 14px; min-height: 1.3em; } .msg.err { color: var(--bad); } .msg.ok { color: var(--good); }
+.login { max-width: 380px; margin: 12vh auto 0; display: grid; gap: 12px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.tabs button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-weight: 600; font-size: 14px; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.jobs { display: flex; gap: 10px; align-items: center; background: var(--card); border: 1px solid var(--lamp); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 14px; flex-wrap: wrap; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--lamp); animation: pulse 1.2s ease-in-out infinite; flex: none; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+.stack { display: grid; gap: 14px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; align-items: end; }
+.fld { display: grid; gap: 5px; min-width: 0; }
+
+/* Overview */
+.ov { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 900px) { .ov { grid-template-columns: minmax(0, 1fr); } }
+.score { display: grid; gap: 10px; }
+.score .num { font: 700 56px/1 var(--f-body); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.score .num small { font-size: 20px; color: var(--muted); font-weight: 600; }
+.meter { height: 8px; border-radius: 99px; background: var(--soft); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 99px; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.checks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 14px; align-items: start; }
+.checks li::before { content: "✕"; font: 700 13px var(--f-mono); color: var(--bad); text-align: center; line-height: 1.5; }
+.checks li.ok::before { content: "✓"; color: var(--good); }
+.checks li.warn::before { content: "!"; color: var(--warn); }
+.checks li small { display: block; color: var(--muted); font-size: 12.5px; }
+.checks li.ok small { display: none; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile .v { font: 700 28px/1.1 var(--f-body); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.tile .s { font-size: 12.5px; color: var(--muted); }
+.chart svg { width: 100%; height: 180px; display: block; margin-top: 8px; overflow: visible; }
+.chart svg text { fill: var(--muted); font: 10.5px var(--f-mono); }
+.chart svg .grid { stroke: var(--grid); }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--card); font: 12.5px var(--f-mono); padding: 6px 9px; border-radius: 6px; z-index: 30; white-space: nowrap; }
+
+/* Tables */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font: 500 11px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.thumb { width: 64px; height: 36px; border-radius: 6px; object-fit: cover; display: block; background: var(--soft); }
+.pill { display: inline-block; font: 600 11px var(--f-mono); padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.good { color: var(--good); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); } .pill.mute { color: var(--muted); }
+.t-title { font-weight: 700; } .t-sub { color: var(--muted); font: 12px var(--f-mono); }
+.acts { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* Editor */
+.ed { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+@media (max-width: 1040px) { .ed { grid-template-columns: minmax(0, 1fr); } }
+.rail { position: sticky; top: 12px; display: grid; gap: 14px; }
+.cnt { font: 11.5px var(--f-mono); color: var(--muted); }
+.cnt.bad { color: var(--bad); } .cnt.good { color: var(--good); }
+.body { font: 14px/1.6 var(--f-mono); min-height: 460px; }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: none; padding: 5px 14px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+.coverbox { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 600px) { .coverbox { grid-template-columns: minmax(0, 1fr); } }
+.coverbox .pic { aspect-ratio: 16 / 9; border-radius: 10px; background: var(--soft); overflow: hidden; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; text-align: center; padding: 0; }
+.coverbox .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.faqrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; border-top: 1px solid var(--grid); padding-top: 10px; }
+.faqrow > div { display: grid; gap: 6px; }
+.serp { font-family: Arial, sans-serif; display: grid; gap: 3px; background: var(--paper); border-radius: 10px; padding: 12px 14px; }
+.serp .u { font-size: 12.5px; color: var(--serpurl); overflow-wrap: anywhere; }
+.serp .t { font-size: 18px; color: var(--serp); line-height: 1.3; }
+.serp .d { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.ring { display: flex; align-items: center; gap: 14px; }
+.ring .n { font: 700 40px/1 var(--f-body); font-variant-numeric: tabular-nums; }
+.prose { font-size: 16px; line-height: 1.7; max-width: 72ch; }
+.prose h2 { font: 400 26px/1.25 var(--f-display); margin: 30px 0 10px; }
+.prose h3 { font-size: 19px; margin: 22px 0 6px; }
+.prose a.il { color: var(--serp); text-decoration-color: var(--lamp); text-decoration-thickness: 2px; }
+.prose table { border-collapse: collapse; } .prose td, .prose th { border-bottom: 1px solid var(--line); padding: 6px 8px; }
+.prose blockquote { border-left: 3px solid var(--lamp); margin: 16px 0; padding: 2px 16px; color: var(--muted); }
+.sugg { border: 1.5px dashed var(--lamp); border-radius: 10px; padding: 10px 12px; display: grid; gap: 6px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="login card" id="login" hidden>
+    <div class="label">Сайт · блог и SEO</div>
+    <label for="pass" style="font-weight:700">Пароль администратора</label>
+    <input type="password" id="pass" autocomplete="current-password">
+    <button class="btn solid" id="loginBtn" type="button" style="justify-content:center">Войти</button>
+    <div class="msg err" id="loginMsg"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="top">
+      <h1><span id="brand">Сайт</span> <small>блог и SEO</small></h1>
+      <div class="row">
+        <a class="btn" href="/admin">← Админка</a>
+        <a class="btn" href="/blog" target="_blank" rel="noopener">Блог ↗</a><a class="btn" href="/" target="_blank" rel="noopener">Сайт ↗</a>
+        <button class="btn" id="reload" type="button">Обновить</button>
+      </div>
+    </div>
+    <div class="jobs" id="jobs" hidden><span class="dot" aria-hidden="true"></span><span id="jobsText"></span></div>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="ov" aria-selected="true">Обзор</button>
+      <button role="tab" data-tab="posts" aria-selected="false">Статьи</button>
+      <button role="tab" data-tab="plan" aria-selected="false">Контент-план</button>
+      <button role="tab" data-tab="links" aria-selected="false">Перелинковка</button>
+      <button role="tab" data-tab="set" aria-selected="false">Настройки</button>
+    </div>
+
+    <!-- Обзор -->
+    <section data-panel="ov" class="stack">
+      <div class="ov">
+        <div class="card score">
+          <div class="label">SEO-оценка сайта</div>
+          <div class="num" id="auScore">—<small>/100</small></div>
+          <div class="meter"><i id="auBar"></i></div>
+          <p class="hint" id="auVerdict"></p>
+          <ul class="checks" id="auChecks"></ul>
+        </div>
+        <div class="stack">
+          <div class="tiles" id="tiles"></div>
+          <div class="card chart"><div class="label"><span>Просмотры статей по дням</span><span>30 дней</span></div><svg id="chV" role="img" aria-label="Просмотры статей по дням"></svg></div>
+          <div class="card stack">
+            <div class="label">Поисковики</div>
+            <div class="row"><a class="btn sm" href="/sitemap.xml" target="_blank" rel="noopener">sitemap.xml ↗</a><a class="btn sm" href="/robots.txt" target="_blank" rel="noopener">robots.txt ↗</a><a class="btn sm" href="/blog/rss.xml" target="_blank" rel="noopener">RSS ↗</a><button class="btn sm solid" id="inowAll" type="button">Отправить все страницы в Bing (IndexNow)</button></div>
+            <p class="hint" id="inowInfo"></p>
+            <p class="hint">Google: добавьте сайт в Search Console, вставьте код подтверждения во вкладке «Настройки», затем в Search Console → «Файлы Sitemap» укажите <b id="smUrl">/sitemap.xml</b>. Bing (а через него ChatGPT и Copilot) получает новые статьи автоматически при публикации (IndexNow). Отдельно создайте профиль Google Business: для запроса «reforma baño Alicante» он важнее сайта.</p>
+          </div>
+          <div class="card"><div class="label" style="margin-bottom:8px">Самые читаемые статьи</div><div class="tbl"><table><thead><tr><th>Статья</th><th class="num">Просмотры</th><th class="num">Оценка</th></tr></thead><tbody id="topBody"></tbody></table></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Статьи -->
+    <section data-panel="posts" class="stack" hidden>
+      <div id="listView" class="stack">
+        <div class="card stack">
+          <div class="row" style="justify-content:space-between">
+            <div class="row"><button class="btn solid" id="newPost" type="button">+ Новая статья</button><button class="btn lamp" id="aiToggle" type="button">Написать с ИИ</button></div>
+            <div class="row" style="flex:1;justify-content:flex-end;min-width:260px">
+              <select id="fLang" style="width:auto"><option value="">Все языки</option><option value="es">Español</option><option value="en">English</option><option value="ru">Русский</option></select>
+              <select id="fStatus" style="width:auto"><option value="">Все статусы</option><option value="published">Опубликованы</option><option value="draft">Черновики</option></select>
+              <input type="text" id="fSearch" placeholder="Поиск" style="max-width:220px">
+            </div>
+          </div>
+          <div id="aiBox" class="stack" hidden style="border-top:1px solid var(--grid);padding-top:14px">
+            <div class="form">
+              <div class="fld" style="grid-column:span 2"><label class="label" for="aiKw">Тема или ключевой запрос</label><input type="text" id="aiKw" placeholder="Например: reforma de baño pequeño en Alicante"></div>
+              <div class="fld"><label class="label" for="aiLang">Язык</label><select id="aiLang"><option value="es">Español</option><option value="en">English</option><option value="ru">Русский</option></select></div>
+              <div class="fld" style="grid-column:span 2"><label class="label" for="aiTitle">Рабочий заголовок (необязательно)</label><input type="text" id="aiTitle"></div>
+              <button class="btn solid" id="aiGo" type="button">Написать статью</button>
+            </div>
+            <p class="hint">ИИ напишет черновик на 1500–2200 слов с подзаголовками, FAQ, мета-описанием и обложкой (≈ $0,15–0,20 за статью вместе с обложкой). Перед публикацией прочитайте и поправьте текст: добавьте свой опыт и примеры. Поисковики понижают сайты с потоком непроверенных ИИ-текстов.</p>
+            <div class="msg" id="aiMsg"></div>
+          </div>
+        </div>
+        <div class="card"><div class="tbl"><table><thead><tr><th></th><th>Статья</th><th>Язык</th><th>Статус</th><th class="num">Оценка</th><th class="num">Слов</th><th class="num">Просм.</th><th class="num">Ссылок на неё</th><th></th></tr></thead><tbody id="postsBody"></tbody></table></div></div>
+      </div>
+
+      <!-- Редактор -->
+      <div id="edView" hidden>
+        <div class="row" style="justify-content:space-between;margin-bottom:12px">
+          <button class="btn" id="edBack" type="button">← К списку</button>
+          <div class="row">
+            <span class="msg" id="edMsg"></span>
+            <a class="btn" id="edView1" href="#" target="_blank" rel="noopener" hidden>На сайте ↗</a>
+            <select id="edTrLang" style="width:auto" aria-label="Язык перевода"></select>
+            <button class="btn lamp" id="edTr" type="button">Перевести с ИИ</button>
+            <button class="btn" id="edSave" type="button">Сохранить</button>
+            <button class="btn solid" id="edPub" type="button">Опубликовать</button>
+          </div>
+        </div>
+        <div class="ed">
+          <div class="stack">
+            <div class="card stack">
+              <div class="fld"><label class="label" for="eTitle"><span>Заголовок (title и H1)</span><span class="cnt" id="cTitle"></span></label><input type="text" id="eTitle" maxlength="140"></div>
+              <div class="form">
+                <div class="fld"><label class="label" for="eKw">Ключевой запрос</label><input type="text" id="eKw" maxlength="80" placeholder="reforma de baño Alicante"></div>
+                <div class="fld"><label class="label" for="eSlug">Адрес</label><input type="text" id="eSlug" maxlength="70" placeholder="reforma-bano-alicante"></div>
+                <div class="fld"><label class="label" for="eLang">Язык</label><select id="eLang"><option value="es">Español</option><option value="en">English</option><option value="ru">Русский</option></select></div>
+              </div>
+              <div class="fld"><label class="label" for="eDesc"><span>Мета-описание (текст под ссылкой в поиске)</span><span class="cnt" id="cDesc"></span></label><textarea id="eDesc" rows="2" maxlength="300"></textarea></div>
+              <div class="form">
+                <div class="fld"><label class="label" for="eTags">Темы (теги) через запятую</label><input type="text" id="eTags" placeholder="precios, plato de ducha"></div>
+                <div class="fld"><label class="label" for="eAnchors">Варианты запроса для ссылок</label><input type="text" id="eAnchors" placeholder="reformar baño Alicante, reformas de baños Alicante"></div>
+                <div class="fld"><label class="label" for="eTr">Связать с переводом</label><select id="eTr"></select></div>
+              </div>
+            </div>
+            <div class="card stack">
+              <div class="label">Обложка</div>
+              <div class="coverbox">
+                <div class="pic" id="ePic">нет обложки</div>
+                <div class="stack" style="gap:8px">
+                  <div class="row"><button class="btn sm" id="eCovGen" type="button">Сгенерировать ИИ</button><button class="btn sm" id="eCovUp" type="button">Загрузить свою</button><input type="file" id="eCovFile" accept="image/*" hidden></div>
+                  <div class="fld"><label class="label" for="eAlt">Описание картинки (alt)</label><input type="text" id="eAlt" maxlength="200"></div>
+                  <p class="hint">Обложку можно сгенерировать, когда статья сохранена.</p>
+                </div>
+              </div>
+            </div>
+            <div class="card stack">
+              <div class="row" style="justify-content:space-between"><div class="label">Текст статьи (Markdown)</div><div class="seg" id="eMode"><button type="button" data-m="edit" aria-pressed="true">Текст</button><button type="button" data-m="prev" aria-pressed="false">Предпросмотр</button></div></div>
+              <textarea id="eBody" class="body" spellcheck="true"></textarea>
+              <div id="ePrev" class="prose" hidden></div>
+              <p class="hint">## Подзаголовок, ### подраздел, - список, 1. нумерованный список, **жирный**, [текст](адрес). Внутренние ссылки ставятся автоматически по ключевым запросам других статей.</p>
+            </div>
+            <div class="card stack">
+              <div class="row" style="justify-content:space-between"><div class="label">Вопросы и ответы (FAQ)</div><button class="btn sm" id="eFaqAdd" type="button">+ Вопрос</button></div>
+              <div id="eFaq" class="stack" style="gap:10px"></div>
+            </div>
+          </div>
+          <aside class="rail">
+            <div class="card stack">
+              <div class="ring"><div class="n" id="sNum">—</div><div style="flex:1"><div class="label">SEO-оценка статьи</div><div class="meter" style="margin-top:6px"><i id="sBar"></i></div><div class="hint" id="sInfo" style="margin-top:6px"></div></div></div>
+              <ul class="checks" id="sChecks"></ul>
+            </div>
+            <div class="card stack">
+              <div class="label">Так статья выглядит в Google</div>
+              <div class="serp"><span class="u" id="serpU"></span><span class="t" id="serpT"></span><span class="d" id="serpD"></span></div>
+              <button class="btn lamp" id="eImprove" type="button">Улучшить заголовок и описание с ИИ</button>
+              <div class="sugg" id="eSugg" hidden><b id="sgT"></b><span id="sgD" class="hint"></span><div class="row"><button class="btn sm solid" id="sgApply" type="button">Применить</button><button class="btn sm" id="sgClose" type="button">Не надо</button></div></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Контент-план -->
+    <section data-panel="plan" class="stack" hidden>
+      <div class="card stack">
+        <div class="label">Сгенерировать идеи статей</div>
+        <div class="fld"><label class="label" for="plSeed">Ниша и темы</label><textarea id="plSeed" rows="2" placeholder="Пусто — стандартные темы: цены, замена ванны на душ, маленькие ванные, микроцемент, города рядом с Аликанте"></textarea></div>
+        <div class="form">
+          <div class="fld"><label class="label" for="plLang">Язык</label><select id="plLang"><option value="es">Español</option><option value="en">English</option><option value="ru">Русский</option></select></div>
+          <div class="fld"><label class="label" for="plCount">Сколько идей</label><select id="plCount"><option>10</option><option selected>20</option><option>30</option><option>40</option></select></div>
+          <button class="btn solid" id="plGo" type="button">Сгенерировать план</button>
+        </div>
+        <p class="hint">ИИ подберёт реальные длинные запросы (около трети — под конкретные города и районы) с низкой конкуренцией и сгруппирует их по темам, чтобы статьи ссылались друг на друга. Около $0,01 за план.</p>
+        <div class="msg" id="plMsg"></div>
+      </div>
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between"><div class="label">Идеи</div><button class="btn sm solid" id="plWriteSel" type="button">Написать выбранные (до 10)</button></div>
+        <div class="tbl"><table><thead><tr><th><input type="checkbox" id="plAll" aria-label="Выбрать все"></th><th>Запрос и заголовок</th><th>Тип</th><th>Тема</th><th>Язык</th><th>Статус</th><th></th></tr></thead><tbody id="planBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- Перелинковка -->
+    <section data-panel="links" class="stack" hidden>
+      <div class="card stack">
+        <p class="hint" style="font-size:14.5px">Ссылки между статьями расставляются сами. Ключевой запрос каждой опубликованной статьи и его варианты превращаются в ссылку на неё в других статьях, по одной ссылке на адрес. Здесь можно добавить свои правила, например вести слова «plato de ducha» на статью о замене ванны. Фразы вида «reforma de baño en Alicante» уже ведут на главную.</p>
+        <div class="form" style="grid-template-columns:minmax(0,220px)"><div class="fld"><label class="label" for="lkMax">Максимум ссылок в статье</label><input type="number" id="lkMax" min="1" max="20"></div></div>
+        <div class="tbl"><table><thead><tr><th>Слова-якоря через запятую</th><th>Адрес ссылки</th><th>Язык</th><th></th></tr></thead><tbody id="lkBody"></tbody></table></div>
+        <div class="row"><button class="btn" id="lkAdd" type="button">+ Правило</button><button class="btn solid" id="lkSave" type="button">Сохранить</button><span class="msg" id="lkMsg"></span></div>
+      </div>
+      <div class="card stack">
+        <div class="label">Автоматические правила из статей</div>
+        <div class="tbl"><table><thead><tr><th>Якоря</th><th>Ведёт на</th><th>Язык</th></tr></thead><tbody id="lkAuto"></tbody></table></div>
+      </div>
+      <div class="card stack">
+        <div class="label">Связи статей</div>
+        <p class="hint">«Сироты» — опубликованные статьи, на которые не ссылается ни одна другая. Поисковики находят и ценят их хуже. Добавьте их ключевые слова в текст других статей.</p>
+        <div class="tbl"><table><thead><tr><th>Статья</th><th class="num">Ссылок на неё</th><th class="num">Ссылок из неё</th></tr></thead><tbody id="lkGraph"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- Настройки -->
+    <section data-panel="set" class="stack" hidden>
+      <div class="card stack">
+        <div class="label">Главная страница в поиске</div>
+        <div class="form" id="homeBox" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))"></div>
+        <p class="hint">Пустое поле — используется текст по умолчанию. Ключевые слова ставьте ближе к началу.</p>
+      </div>
+      <div class="card stack">
+        <div class="label">Подтверждение сайта в поисковиках</div>
+        <div class="form">
+          <div class="fld"><label class="label" for="vG">Google Search Console</label><input type="text" id="vG" placeholder="код из meta-тега"></div>
+          <div class="fld"><label class="label" for="vB">Bing Webmaster</label><input type="text" id="vB" placeholder="код из meta-тега"></div>
+        </div>
+        <p class="hint">В сервисе выберите способ «HTML-тег» и скопируйте только значение content, например <code>abc123XYZ</code>.</p>
+      </div>
+      <div class="card stack">
+        <div class="label">Аналитика</div>
+        <div class="form">
+          <div class="fld"><label class="label" for="aGa">Google Analytics 4</label><input type="text" id="aGa" placeholder="G-XXXXXXXXXX"></div>
+        </div>
+      </div>
+      <div class="card stack">
+        <div class="label">ИИ и индексация</div>
+        <div class="form">
+          <div class="fld"><label class="label" for="sLlm">Модель для статей</label><select id="sLlm"></select></div>
+        </div>
+        <label class="row" style="font-size:14px"><input type="checkbox" id="sCover"> Автоматически генерировать обложку к статье ИИ</label>
+        <label class="row" style="font-size:14px"><input type="checkbox" id="sInow"> Сообщать Bing о новых статьях (IndexNow)</label>
+      </div>
+      <div class="card stack">
+        <div class="label">Картинка для соцсетей по умолчанию</div>
+        <div class="coverbox"><div class="pic" id="ogPic">нет</div><div class="stack" style="gap:8px"><div class="row"><button class="btn sm" id="ogUp" type="button">Загрузить</button><input type="file" id="ogFile" accept="image/*" hidden></div><p class="hint">1200×630. Показывается при отправке ссылки на главную или блог в мессенджерах и соцсетях.</p></div></div>
+      </div>
+      <div class="row"><button class="btn solid" id="setSave" type="button">Сохранить настройки</button><span class="msg" id="setMsg"></span></div>
+    </section>
+  </div>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const ss = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} }, del(k) { try { sessionStorage.removeItem(k); } catch {} } };
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const num = v => new Intl.NumberFormat("ru-RU").format(v || 0);
+  const date = ts => ts ? new Date(ts).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—";
+  const grade = s => s >= 80 ? "good" : s >= 55 ? "warn" : "bad";
+  const gradeColor = s => `var(--${grade(s)})`;
+  let pass = ss.get("pt_admin") || "";
+  let D = null, tab = "ov", poll = null;
+
+  async function api(path, body) {
+    const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "content-type": "application/json", "x-admin": pass }, body: body ? JSON.stringify(body) : undefined });
+    let d = {}; try { d = await r.json(); } catch {}
+    if (!r.ok) { const e = new Error(d.error || "Ошибка " + r.status); e.status = r.status; throw e; }
+    return d;
+  }
+  function toJpeg(f, max = 1600) {
+    return new Promise((ok, bad) => {
+      const img = new Image(), u = URL.createObjectURL(f);
+      img.onload = () => { const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)); const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k); const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u); ok(c.toDataURL("image/jpeg", 0.88)); };
+      img.onerror = () => { URL.revokeObjectURL(u); bad(new Error("Не удалось открыть картинку.")); };
+      img.src = u;
+    });
+  }
+  const say = (id, text, kind = "") => { const m = $(id); m.className = "msg" + (kind ? " " + kind : ""); m.textContent = text; };
+
+  // ---------- вход ----------
+  async function load() {
+    try {
+      D = await api("/api/admin/seo");
+      ss.set("pt_admin", pass);
+      $("login").hidden = true; $("app").hidden = false;
+      render();
+    } catch (e) {
+      if (e.status === 401 || e.status === 403 || !pass) { $("login").hidden = false; $("app").hidden = true; $("loginMsg").textContent = pass ? e.message : ""; }
+      else say("edMsg", e.message, "err");
+    }
+  }
+  $("loginBtn").onclick = () => { pass = $("pass").value; load(); };
+  $("pass").addEventListener("keydown", e => { if (e.key === "Enter") $("loginBtn").click(); });
+  $("reload").onclick = load;
+
+  function render() {
+    $("brand").textContent = D.brand;
+    $("smUrl").textContent = D.origin + "/sitemap.xml";
+    renderJobs(); renderOverview(); renderPosts(); renderPlan(); renderLinks(); renderSettings();
+  }
+
+  // ---------- задачи ИИ ----------
+  function renderJobs() {
+    const w = D.jobs.filter(j => j.status === "working");
+    const failed = D.jobs.filter(j => j.status === "failed" && Date.now() - j.created < 3600e3);
+    $("jobs").hidden = !w.length && !failed.length;
+    const names = { article: "статья", plan: "контент-план", cover: "обложка", translate: "перевод" };
+    $("jobsText").textContent = (w.length ? `ИИ работает: ${w.map(j => names[j.type] + (j.input?.keyword ? ` «${j.input.keyword}»` : "")).join(", ")}. Обычно 1–3 минуты. ` : "") + (failed.length ? `Ошибки за час: ${failed.map(j => j.error).slice(0, 2).join("; ")}` : "");
+    $("jobs").querySelector(".dot").hidden = !w.length;
+    clearTimeout(poll);
+    if (w.length) poll = setTimeout(async () => { try { D = await api("/api/admin/seo"); render(); } catch {} }, 5000);
+  }
+
+  // ---------- обзор ----------
+  function renderOverview() {
+    const a = D.audit;
+    $("auScore").innerHTML = `${a.score}<small>/100</small>`;
+    $("auBar").style.width = a.score + "%"; $("auBar").style.background = gradeColor(a.score);
+    $("auVerdict").textContent = a.score >= 80 ? "Сайт хорошо подготовлен. Дальше трафик растёт от новых полезных статей и ссылок с других сайтов." : a.score >= 55 ? "Основа есть. Закройте пункты с крестиком: они сильнее всего мешают росту." : "Начните с пунктов с крестиком сверху вниз.";
+    $("auChecks").innerHTML = a.checks.map(c => `<li class="${c.ok ? "ok" : c.warn ? "warn" : ""}"><span>${esc(c.t)}<small>${esc(c.tip)}</small></span></li>`).join("");
+    const pub = D.posts.filter(p => p.status === "published");
+    const v30 = D.views.reduce((s, d) => s + d.views, 0);
+    const avg = pub.length ? Math.round(pub.reduce((s, p) => s + p.score, 0) / pub.length) : 0;
+    $("tiles").innerHTML = [
+      ["Опубликовано", num(pub.length), D.langs.map(l => `${l.toUpperCase()} ${pub.filter(p => p.lang === l).length}`).join(" · ")],
+      ["Черновики", num(D.posts.length - pub.length), "ждут проверки"],
+      ["Просмотры", num(v30), "за 30 дней, без ботов"],
+      ["Средняя оценка", pub.length ? avg : "—", "опубликованных статей"],
+    ].map(([l, v, s]) => `<div class="card tile"><div class="label">${l}</div><div class="v">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join("");
+    bars($("chV"), D.views);
+    const top = [...pub].sort((x, y) => y.views - x.views).slice(0, 5);
+    $("topBody").innerHTML = top.length ? top.map(p => `<tr><td><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a></td><td class="num">${num(p.views)}</td><td class="num"><span class="pill ${grade(p.score)}">${p.score}</span></td></tr>`).join("") : `<tr><td colspan="3" class="hint">Пока нет опубликованных статей.</td></tr>`;
+    const li = D.settings.lastIndexNow;
+    $("inowInfo").textContent = li ? `Последняя отправка: ${new Date(li.at).toLocaleString("ru-RU")}, страниц: ${li.count}, ответ: ${li.status === 200 || li.status === 202 ? "принято" : li.status || li.error}` : (D.publicUrl ? "Ещё не отправляли." : "Чтобы отправлять страницы, задайте PUBLIC_URL в Railway → Variables.");
+  }
+  function bars(svg, data) {
+    const W = svg.clientWidth || 600, H = 180, pl = 36, pb = 22, pt = 8;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const vals = data.map(d => d.views), max = Math.max(...vals, 0);
+    const step = max <= 4 ? 1 : (() => { const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; })();
+    const top = Math.max(step * Math.ceil(max / step), step);
+    const y = v => pt + (H - pt - pb) * (1 - v / top), bw = (W - pl) / vals.length;
+    const color = getComputedStyle(document.documentElement).getPropertyValue("--bar").trim();
+    let o = "";
+    for (let v = 0; v <= top; v += step) o += `<line class="grid" x1="${pl}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text x="${pl - 6}" y="${y(v) + 3.5}" text-anchor="end">${v}</text>`;
+    data.forEach((d, i) => {
+      const x = pl + i * bw + 1.5, w = Math.max(2, bw - 3), yy = y(d.views), h = y(0) - yy, r = Math.min(3, w / 2, h);
+      const lbl = d.day.slice(8, 10) + "." + d.day.slice(5, 7);
+      o += `<rect x="${pl + i * bw}" y="${pt}" width="${bw}" height="${H - pt - pb}" fill="transparent" data-tip="${lbl}: ${d.views}"/>`;
+      if (h > 0) o += `<path d="M${x},${y(0)} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + w - r} Q${x + w},${yy} ${x + w},${yy + r} V${y(0)} Z" fill="${color}" pointer-events="none"/>`;
+      if (i % 5 === (data.length - 1) % 5) o += `<text x="${pl + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${lbl}</text>`;
+    });
+    o += `<line x1="${pl}" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)"/>`;
+    svg.innerHTML = o;
+    svg.querySelectorAll("rect").forEach(r => {
+      r.addEventListener("mousemove", e => { const t = $("tip"); t.hidden = false; t.textContent = r.dataset.tip + " просм."; t.style.left = e.clientX + 12 + "px"; t.style.top = e.clientY - 30 + "px"; });
+      r.addEventListener("mouseleave", () => $("tip").hidden = true);
+    });
+  }
+  addEventListener("resize", () => D && bars($("chV"), D.views));
+  $("inowAll").onclick = async () => {
+    $("inowAll").disabled = true;
+    try { const r = await api("/api/admin/seo/indexnow", {}); $("inowInfo").textContent = r.skipped ? r.skipped : `Отправлено страниц: ${r.count}, ответ: ${r.status === 200 || r.status === 202 ? "принято" : r.status || r.error}`; }
+    catch (e) { $("inowInfo").textContent = e.message; }
+    $("inowAll").disabled = false;
+  };
+
+  // ---------- список статей ----------
+  function renderPosts() {
+    const L = $("fLang").value, S = $("fStatus").value, q = $("fSearch").value.trim().toLowerCase();
+    const list = D.posts.filter(p => (!L || p.lang === L) && (!S || p.status === S) && (!q || (p.title + " " + p.keyword).toLowerCase().includes(q)));
+    const body = $("postsBody");
+    if (!list.length) { body.innerHTML = `<tr><td colspan="9" class="hint">${D.posts.length ? "Ничего не найдено." : "Статей пока нет. Нажмите «Написать с ИИ» или откройте «Контент-план», чтобы получить идеи."}</td></tr>`; return; }
+    body.innerHTML = "";
+    list.forEach(p => {
+      const tr = document.createElement("tr");
+      const pubd = p.status === "published";
+      tr.innerHTML = `<td>${p.cover ? `<img class="thumb" src="${esc(p.cover)}" alt="">` : `<span class="thumb"></span>`}</td>
+        <td><div class="t-title">${esc(p.title)}</div><div class="t-sub">${esc(p.keyword || "без ключевого запроса")}${p.ai ? " · ИИ" : ""}${p.coverBusy ? " · обложка генерируется" : ""}</div></td>
+        <td>${p.lang.toUpperCase()}</td>
+        <td><span class="pill ${pubd ? "good" : "mute"}">${pubd ? "на сайте" : "черновик"}</span></td>
+        <td class="num"><span class="pill ${grade(p.score)}">${p.score}</span></td>
+        <td class="num">${num(p.words)}</td><td class="num">${num(p.views)}</td>
+        <td class="num">${pubd ? (p.incoming ? p.incoming : `<span class="pill warn">0</span>`) : "—"}</td>
+        <td><div class="acts"><button class="btn sm" data-a="edit" type="button">Открыть</button>${pubd ? `<a class="btn sm" href="${esc(p.url)}" target="_blank" rel="noopener">↗</a>` : ""}<button class="btn sm" data-a="pub" type="button">${pubd ? "Снять" : "Опубликовать"}</button><button class="btn sm danger" data-a="rm" type="button" aria-label="Удалить">✕</button></div></td>`;
+      tr.querySelector('[data-a="edit"]').onclick = () => openEditor(p.id);
+      tr.querySelector('[data-a="pub"]').onclick = async (e) => { e.target.disabled = true; try { await api("/api/admin/seo/publish", { id: p.id, published: !pubd }); await load(); } catch (err) { alert(err.message); e.target.disabled = false; } };
+      tr.querySelector('[data-a="rm"]').onclick = async () => { if (!confirm(`Удалить статью «${p.title}»? Это нельзя отменить.`)) return; await api("/api/admin/seo/delete", { id: p.id }); load(); };
+      body.appendChild(tr);
+    });
+  }
+  ["fLang", "fStatus"].forEach(id => $(id).onchange = renderPosts);
+  $("fSearch").oninput = renderPosts;
+  $("aiToggle").onclick = () => { $("aiBox").hidden = !$("aiBox").hidden; if (!$("aiBox").hidden) $("aiKw").focus(); };
+  $("aiGo").onclick = async () => {
+    const kw = $("aiKw").value.trim();
+    if (kw.length < 3) return say("aiMsg", "Напишите тему или ключевой запрос.", "err");
+    $("aiGo").disabled = true;
+    try {
+      await api("/api/admin/seo/ai/article", { keyword: kw, lang: $("aiLang").value, title: $("aiTitle").value });
+      say("aiMsg", "ИИ пишет статью. Черновик появится в списке через 1–3 минуты.", "ok");
+      $("aiKw").value = ""; $("aiTitle").value = "";
+      await load();
+    } catch (e) { say("aiMsg", e.message, "err"); }
+    $("aiGo").disabled = false;
+  };
+  $("newPost").onclick = () => openEditor(null);
+
+  // ---------- редактор ----------
+  let E = null, anTimer = null, dirty = false;
+  function setTab(name) { tab = name; $("tabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === name))); document.querySelectorAll("[data-panel]").forEach(p => p.hidden = p.dataset.panel !== name); }
+  async function openEditor(id) {
+    setTab("posts");
+    E = id ? (await api("/api/admin/seo/post?id=" + encodeURIComponent(id))).post : { id: "", lang: $("fLang").value || "es", title: "", keyword: "", slug: "", description: "", tags: [], anchors: "", body: "", faq: [], cover: "", coverAlt: "", translationId: "", status: "draft" };
+    E.translationId = E.translationId ?? (E.translations?.[0]?.id || "");
+    $("listView").hidden = true; $("edView").hidden = false;
+    $("eTitle").value = E.title; $("eKw").value = E.keyword; $("eSlug").value = E.slug; $("eLang").value = E.lang; $("eDesc").value = E.description;
+    $("eTags").value = (E.tags || []).join(", "); $("eAnchors").value = E.anchors || ""; $("eBody").value = E.body; $("eAlt").value = E.coverAlt || "";
+    renderTr(); renderCover(); renderFaq(); setMode("edit"); say("edMsg", ""); dirty = false;
+    $("eSugg").hidden = true;
+    updPub(); counters(); analyzeNow(); scrollTo(0, 0);
+  }
+  function renderTrBtn() {
+    const have = new Set([E.lang, ...(E.translations || []).map(t => t.lang)]);
+    const free = D.langs.filter(l => !have.has(l));
+    $("edTrLang").innerHTML = free.map(l => `<option value="${l}">→ ${l.toUpperCase()}</option>`).join("");
+    $("edTrLang").hidden = $("edTr").hidden = !E.id || !free.length;
+  }
+  $("edTr").onclick = async () => {
+    $("edTr").disabled = true;
+    try { if (dirty) await saveE(); await api("/api/admin/seo/ai/translate", { id: E.id, lang: $("edTrLang").value }); say("edMsg", "ИИ переводит статью. Черновик перевода появится в списке через 1–3 минуты и будет связан с этой статьёй.", "ok"); D = await api("/api/admin/seo"); renderJobs(); }
+    catch (e) { say("edMsg", e.message, "err"); }
+    $("edTr").disabled = false;
+  };
+  function renderTr() {
+    renderTrBtn();
+    const other = D.posts.filter(p => p.lang !== $("eLang").value && p.id !== E.id);
+    $("eTr").innerHTML = `<option value="">— нет —</option>` + other.map(p => `<option value="${esc(p.id)}" ${p.id === E.translationId ? "selected" : ""}>${esc(p.lang.toUpperCase() + " · " + p.title)}</option>`).join("");
+  }
+  function renderCover() {
+    const busy = D.posts.find(p => p.id === E.id)?.coverBusy;
+    $("ePic").innerHTML = E.cover ? `<img src="${esc(E.cover)}" alt="">` : busy ? "генерируется…" : "нет обложки";
+    $("eCovGen").disabled = !E.id || busy;
+  }
+  function renderFaq() {
+    const box = $("eFaq"); box.innerHTML = "";
+    (E.faq || []).forEach((f, i) => {
+      const d = document.createElement("div"); d.className = "faqrow";
+      d.innerHTML = `<div><input type="text" placeholder="Вопрос" maxlength="240"><textarea rows="2" placeholder="Ответ"></textarea></div><button class="btn sm danger" type="button" aria-label="Удалить вопрос">✕</button>`;
+      const [q, a] = [d.querySelector("input"), d.querySelector("textarea")];
+      q.value = f.q; a.value = f.a;
+      q.oninput = () => { f.q = q.value; touch(); }; a.oninput = () => { f.a = a.value; touch(); };
+      d.querySelector("button").onclick = () => { E.faq.splice(i, 1); renderFaq(); touch(); };
+      box.appendChild(d);
+    });
+    if (!E.faq.length) box.innerHTML = `<p class="hint">Вопросов пока нет. 3–5 вопросов помогают попадать в блоки «Похожие вопросы».</p>`;
+  }
+  $("eFaqAdd").onclick = () => { E.faq.push({ q: "", a: "" }); renderFaq(); };
+  function collect() {
+    return { id: E.id || undefined, lang: $("eLang").value, title: $("eTitle").value, keyword: $("eKw").value, slug: $("eSlug").value, description: $("eDesc").value,
+      tags: $("eTags").value, anchors: $("eAnchors").value, body: $("eBody").value, faq: E.faq.filter(f => f.q.trim() && f.a.trim()), coverAlt: $("eAlt").value, translationId: $("eTr").value, cover: E.cover };
+  }
+  function counters() {
+    const c = (el, v, lo, hi) => { el.textContent = `${v} / ${lo}–${hi}`; el.className = "cnt " + (v >= lo && v <= hi ? "good" : v ? "bad" : ""); };
+    c($("cTitle"), $("eTitle").value.length, 30, 65); c($("cDesc"), $("eDesc").value.length, 110, 165);
+    const base = D.origin.replace(/^https?:\/\//, "") + ($("eLang").value === "es" ? " › blog › " : " › " + $("eLang").value + " › blog › ");
+    $("serpU").textContent = base + ($("eSlug").value || slugPreview($("eTitle").value));
+    const t = $("eTitle").value || "Заголовок статьи"; $("serpT").textContent = (t + " — " + D.brand).slice(0, 62) + ((t + " — " + D.brand).length > 62 ? "…" : "");
+    const d = $("eDesc").value || "Описание появится здесь. Без него поисковик возьмёт случайный кусок текста."; $("serpD").textContent = d.slice(0, 160) + (d.length > 160 ? "…" : "");
+  }
+  const TR = { а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "h", ц: "ts", ч: "ch", ш: "sh", щ: "sch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya" };
+  const slugPreview = s => s.toLowerCase().split("").map(c => TR[c] ?? c).join("").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
+  function touch() { dirty = true; counters(); clearTimeout(anTimer); anTimer = setTimeout(analyzeNow, 700); }
+  ["eTitle", "eKw", "eSlug", "eDesc", "eTags", "eAnchors", "eBody", "eAlt"].forEach(id => $(id).addEventListener("input", touch));
+  $("eLang").onchange = () => { renderTr(); touch(); };
+  $("eTr").onchange = touch;
+  async function analyzeNow() {
+    try {
+      const a = await api("/api/admin/seo/analyze", collect());
+      $("sNum").textContent = a.score; $("sNum").style.color = gradeColor(a.score);
+      $("sBar").style.width = a.score + "%"; $("sBar").style.background = gradeColor(a.score);
+      $("sInfo").textContent = `${num(a.words)} слов · ${a.readMin} мин чтения · ссылок: ${a.links.length}`;
+      $("sChecks").innerHTML = a.checks.map(c => `<li class="${c.ok ? "ok" : c.warn ? "warn" : ""}"><span>${esc(c.t)}<small>${esc(c.tip)}</small></span></li>`).join("");
+      $("ePrev").innerHTML = `<h1 style="font:400 34px/1.15 var(--f-display);margin:0 0 14px">${esc($("eTitle").value)}</h1>` + a.html;
+    } catch {}
+  }
+  function setMode(m) { $("eMode").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === m))); $("eBody").hidden = m !== "edit"; $("ePrev").hidden = m !== "prev"; if (m === "prev") analyzeNow(); }
+  $("eMode").querySelectorAll("button").forEach(b => b.onclick = () => setMode(b.dataset.m));
+  function updPub() {
+    const pubd = E.status === "published";
+    $("edPub").textContent = pubd ? "Снять с публикации" : "Опубликовать";
+    $("edView1").hidden = !pubd || !E.id;
+    if (pubd) $("edView1").href = (E.lang === "es" ? "/blog/" : "/" + E.lang + "/blog/") + E.slug;
+  }
+  async function saveE() {
+    const r = await api("/api/admin/seo/post", collect());
+    E = r.post; E.translationId = E.translations?.[0]?.id || ""; dirty = false;
+    $("eSlug").value = E.slug; counters(); renderCover(); updPub();
+    const i = D.posts.findIndex(p => p.id === E.id);
+    return r;
+  }
+  $("edSave").onclick = async () => { $("edSave").disabled = true; try { await saveE(); say("edMsg", "Сохранено", "ok"); load(); } catch (e) { say("edMsg", e.message, "err"); } $("edSave").disabled = false; };
+  $("edPub").onclick = async () => {
+    $("edPub").disabled = true;
+    try {
+      await saveE();
+      const r = await api("/api/admin/seo/publish", { id: E.id, published: E.status !== "published" });
+      E.status = r.post.status; updPub();
+      say("edMsg", E.status === "published" ? "Опубликовано" + (r.indexnow?.status ? ", поисковики уведомлены" : "") : "Снято с публикации", "ok");
+      load();
+    } catch (e) { say("edMsg", e.message, "err"); }
+    $("edPub").disabled = false;
+  };
+  $("edBack").onclick = () => { if (dirty && !confirm("Есть несохранённые изменения. Выйти без сохранения?")) return; $("edView").hidden = true; $("listView").hidden = false; E = null; load(); };
+  $("eCovGen").onclick = async () => {
+    if (!E.id) return;
+    $("eCovGen").disabled = true;
+    try { if (dirty) await saveE(); await api("/api/admin/seo/cover", { id: E.id }); say("edMsg", "Обложка генерируется, около минуты", "ok"); $("ePic").textContent = "генерируется…"; waitCover(); }
+    catch (e) { say("edMsg", e.message, "err"); $("eCovGen").disabled = false; }
+  };
+  async function waitCover() {
+    for (let i = 0; i < 40 && E; i++) {
+      await new Promise(r => setTimeout(r, 4000));
+      if (!E) return;
+      try { D = await api("/api/admin/seo"); renderJobs(); const p = (await api("/api/admin/seo/post?id=" + E.id)).post; if (p.cover && p.cover !== E.cover) { E.cover = p.cover; renderCover(); analyzeNow(); return; } if (!p.coverJob) { renderCover(); return; } } catch {}
+    }
+  }
+  $("eCovUp").onclick = () => { if (!E.id) return say("edMsg", "Сначала сохраните статью.", "err"); $("eCovFile").click(); };
+  $("eCovFile").onchange = async (e) => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { const r = await api("/api/admin/seo/cover", { id: E.id, image: await toJpeg(f) }); E.cover = r.post.cover; renderCover(); analyzeNow(); } catch (err) { say("edMsg", err.message, "err"); }
+  };
+  let sugg = null;
+  $("eImprove").onclick = async () => {
+    $("eImprove").disabled = true; $("eImprove").textContent = "ИИ думает…";
+    try { sugg = await api("/api/admin/seo/ai/meta", collect()); $("sgT").textContent = sugg.title; $("sgD").textContent = sugg.description; $("eSugg").hidden = false; }
+    catch (e) { say("edMsg", e.message, "err"); }
+    $("eImprove").disabled = false; $("eImprove").textContent = "Улучшить заголовок и описание с ИИ";
+  };
+  $("sgApply").onclick = () => { $("eTitle").value = sugg.title; $("eDesc").value = sugg.description; $("eSugg").hidden = true; touch(); };
+  $("sgClose").onclick = () => $("eSugg").hidden = true;
+  addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+  // ---------- контент-план ----------
+  function renderPlan() {
+    const body = $("planBody");
+    if (!D.plan.length) { body.innerHTML = `<tr><td colspan="7" class="hint">Идей пока нет. Нажмите «Сгенерировать план».</td></tr>`; return; }
+    body.innerHTML = "";
+    const st = { idea: ["идея", "mute"], writing: ["пишется…", "warn"], done: ["статья готова", "good"] };
+    D.plan.forEach(it => {
+      const tr = document.createElement("tr");
+      const [label, cls] = st[it.status] || st.idea;
+      tr.innerHTML = `<td><input type="checkbox" ${it.status !== "idea" ? "disabled" : ""} aria-label="Выбрать"></td><td><div class="t-title">${esc(it.title)}</div><div class="t-sub">${esc(it.keyword)}</div></td><td>${esc(it.intent)}</td><td>${esc(it.cluster)}</td><td>${it.lang.toUpperCase()}</td><td><span class="pill ${cls}">${label}</span></td>
+        <td><div class="acts">${it.status === "idea" ? `<button class="btn sm solid" data-a="w" type="button">Написать</button>` : it.postId ? `<button class="btn sm" data-a="o" type="button">Открыть</button>` : ""}<button class="btn sm danger" data-a="rm" type="button" aria-label="Удалить">✕</button></div></td>`;
+      tr.dataset.id = it.id;
+      const w = tr.querySelector('[data-a="w"]'); if (w) w.onclick = () => writePlan([it]);
+      const o = tr.querySelector('[data-a="o"]'); if (o) o.onclick = () => openEditor(it.postId);
+      tr.querySelector('[data-a="rm"]').onclick = async () => { await api("/api/admin/seo/plan/remove", { id: it.id }); load(); };
+      body.appendChild(tr);
+    });
+  }
+  async function writePlan(items) {
+    try { await api("/api/admin/seo/ai/article", { items: items.map(it => ({ keyword: it.keyword, title: it.title, intent: it.intent, lang: it.lang, planId: it.id })) }); say("plMsg", `ИИ пишет статей: ${items.length}. Черновики появятся во вкладке «Статьи».`, "ok"); load(); }
+    catch (e) { say("plMsg", e.message, "err"); }
+  }
+  $("plAll").onchange = () => $("planBody").querySelectorAll("input[type=checkbox]:not(:disabled)").forEach(c => c.checked = $("plAll").checked);
+  $("plWriteSel").onclick = () => {
+    const ids = [...$("planBody").querySelectorAll("tr")].filter(tr => tr.querySelector("input:checked")).map(tr => tr.dataset.id);
+    const items = D.plan.filter(x => ids.includes(x.id)).slice(0, 10);
+    if (!items.length) return say("plMsg", "Отметьте идеи галочками.", "err");
+    writePlan(items);
+  };
+  $("plGo").onclick = async () => {
+    $("plGo").disabled = true;
+    try { await api("/api/admin/seo/ai/plan", { seed: $("plSeed").value, lang: $("plLang").value, count: $("plCount").value }); say("plMsg", "ИИ составляет план, около минуты.", "ok"); load(); }
+    catch (e) { say("plMsg", e.message, "err"); }
+    $("plGo").disabled = false;
+  };
+
+  // ---------- перелинковка ----------
+  let rules = [];
+  function renderLinks() {
+    rules = D.links.manual.map(r => ({ ...r }));
+    $("lkMax").value = D.links.max;
+    drawRules();
+    $("lkAuto").innerHTML = D.links.auto.length ? D.links.auto.map(r => `<tr><td>${esc(r.anchors)}</td><td><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a></td><td>${r.lang.toUpperCase()}</td></tr>`).join("") : `<tr><td colspan="3" class="hint">Появятся, когда будут опубликованы статьи с ключевым запросом.</td></tr>`;
+    const pub = D.posts.filter(p => p.status === "published").sort((a, b) => a.incoming - b.incoming);
+    $("lkGraph").innerHTML = pub.length ? pub.map(p => `<tr><td>${esc(p.title)}</td><td class="num">${p.incoming ? p.incoming : `<span class="pill warn">0 · сирота</span>`}</td><td class="num">${p.outgoing}</td></tr>`).join("") : `<tr><td colspan="3" class="hint">Нет опубликованных статей.</td></tr>`;
+  }
+  function drawRules() {
+    const body = $("lkBody"); body.innerHTML = "";
+    if (!rules.length) body.innerHTML = `<tr><td colspan="4" class="hint">Своих правил нет.</td></tr>`;
+    rules.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td><input type="text" placeholder="plato de ducha, cambiar bañera"></td><td><input type="text" placeholder="/ или /blog/adres"></td><td><select><option value="es">ES</option><option value="en">EN</option><option value="ru">RU</option><option value="all">Все</option></select></td><td><button class="btn sm danger" type="button" aria-label="Удалить">✕</button></td>`;
+      const [a, u] = tr.querySelectorAll("input"), l = tr.querySelector("select");
+      a.value = r.anchors; u.value = r.url; l.value = r.lang;
+      a.oninput = () => r.anchors = a.value; u.oninput = () => r.url = u.value; l.onchange = () => r.lang = l.value;
+      tr.querySelector("button").onclick = () => { rules.splice(i, 1); drawRules(); };
+      body.appendChild(tr);
+    });
+  }
+  $("lkAdd").onclick = () => { rules.push({ anchors: "", url: "/", lang: "es" }); drawRules(); };
+  $("lkSave").onclick = async () => { try { await api("/api/admin/seo/links", { links: rules, maxLinks: $("lkMax").value }); say("lkMsg", "Сохранено. Ссылки обновятся во всех статьях.", "ok"); load(); } catch (e) { say("lkMsg", e.message, "err"); } };
+
+  // ---------- настройки ----------
+  function renderSettings() {
+    const s = D.settings;
+    const LN = { es: "ES", en: "EN", ru: "RU" };
+    $("homeBox").innerHTML = D.langs.map(l => `<div class="stack" style="gap:8px"><div class="fld"><label class="label" for="h${l}T"><span>Заголовок (${LN[l]})</span><span class="cnt" id="ch${l}T"></span></label><input type="text" id="h${l}T" maxlength="120"></div><div class="fld"><label class="label" for="h${l}D"><span>Описание (${LN[l]})</span><span class="cnt" id="ch${l}D"></span></label><textarea id="h${l}D" rows="3" maxlength="300"></textarea></div></div>`).join("");
+    D.langs.forEach(l => { $("h" + l + "T").value = s.home[l]?.title || ""; $("h" + l + "D").value = s.home[l]?.description || ""; $("h" + l + "T").placeholder = s.defaults[l].title; $("h" + l + "D").placeholder = s.defaults[l].description; $("h" + l + "T").oninput = hc; $("h" + l + "D").oninput = hc; });
+    $("vG").value = s.verify.google; $("vB").value = s.verify.bing;
+    $("aGa").value = s.analytics.ga4;
+    $("sLlm").innerHTML = D.llmModels.map(m => `<option value="${esc(m.id)}" ${m.id === s.llm ? "selected" : ""}>${esc(m.name)}</option>`).join("");
+    $("sCover").checked = s.autoCover; $("sInow").checked = s.indexnow;
+    $("ogPic").innerHTML = s.ogImage ? `<img src="${esc(s.ogImage)}" alt="">` : "нет";
+    hc();
+  }
+  function hc() {
+    const c = (inp, out, lo, hi) => { const v = (inp.value || inp.placeholder).length; out.textContent = `${v} / ${lo}–${hi}`; out.className = "cnt " + (v >= lo && v <= hi ? "good" : "bad"); };
+    D.langs.forEach(l => { c($("h" + l + "T"), $("ch" + l + "T"), 30, 65); c($("h" + l + "D"), $("ch" + l + "D"), 110, 170); });
+  }
+  $("setSave").onclick = async () => {
+    try {
+      await api("/api/admin/seo/settings", {
+        home: Object.fromEntries(D.langs.map(l => [l, { title: $("h" + l + "T").value, description: $("h" + l + "D").value }])),
+        verify: { google: $("vG").value, bing: $("vB").value }, analytics: { ga4: $("aGa").value },
+        llm: $("sLlm").value, autoCover: $("sCover").checked, indexnow: $("sInow").checked,
+      });
+      say("setMsg", "Сохранено", "ok"); load();
+    } catch (e) { say("setMsg", e.message, "err"); }
+  };
+  $("ogUp").onclick = () => $("ogFile").click();
+  $("ogFile").onchange = async (e) => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; try { await api("/api/admin/seo/og", { image: await toJpeg(f, 1200) }); load(); } catch (err) { say("setMsg", err.message, "err"); } };
+
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = () => { if (!$("edView").hidden && b.dataset.tab !== "posts") { if (dirty && !confirm("Есть несохранённые изменения. Уйти?")) return; $("edView").hidden = true; $("listView").hidden = false; E = null; dirty = false; } setTab(b.dataset.tab); if (b.dataset.tab === "ov") bars($("chV"), D.views); });
+
+  if (pass) load(); else { $("login").hidden = false; $("pass").focus(); }
+})();
+</script>
+</body>
+</html>

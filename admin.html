@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Админка — заявки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: owner's console — alerts, summary tiles, 14-day leads chart, then tabbed panels (leads, projects, visualiser, company, prices, system) */
+:root {
+  --paper: #eceef0; --card: #ffffff; --ink: #18212b; --muted: #5b6672; --line: #d5dae0; --grid: #e6e9ed;
+  --lamp: #c4612f; --lamp-ink: #ffffff; --bar: #1d6a85; --bar2: #c4612f; --soft: #e2e6ea;
+  --good: #1f7a4d; --warn: #9a6200; --bad: #b42318;
+  --f-display: "Fraunces", Georgia, serif; --f-body: "Manrope", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #11161b; --card: #181f26; --ink: #e9edf0; --muted: #9aa6b1; --line: #2a343e; --grid: #222b34;
+  --lamp: #e2804e; --lamp-ink: #11161b; --bar: #6fb6d0; --bar2: #e2804e; --soft: #202932;
+  --good: #5fd39a; --warn: #f0b44c; --bad: #ff8a7a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #11161b; --card: #181f26; --ink: #e9edf0; --muted: #9aa6b1; --line: #2a343e; --grid: #222b34;
+  --lamp: #e2804e; --lamp-ink: #11161b; --bar: #6fb6d0; --bar2: #e2804e; --soft: #202932;
+  --good: #5fd39a; --warn: #f0b44c; --bad: #ff8a7a; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--f-body); }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--lamp); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 18px; padding-block: 18px 50px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.top h1 { margin: 0; font: 400 26px var(--f-display); }
+.top h1 small { font: 500 11px var(--f-mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; }
+.btn { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+.btn:hover { border-color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.solid { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; }
+.btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+input[type=text], input[type=password], input[type=number], select, textarea { background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+.label { font: 500 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.hint { color: var(--muted); font-size: 13.5px; margin: 0; }
+.login { max-width: 380px; margin: 12vh auto 0; display: grid; gap: 12px; }
+.msg { font-size: 14px; min-height: 1.3em; } .msg.err { color: var(--bad); } .msg.ok { color: var(--good); }
+.stack { display: grid; gap: 14px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end; }
+.fld { display: grid; gap: 5px; min-width: 0; }
+
+.alerts { display: grid; gap: 8px; margin-bottom: 14px; }
+.alert { display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line); background: var(--card); font-size: 14px; }
+.alert b { font: 600 11px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; flex: none; }
+.alert.bad b { background: var(--bad); color: var(--card); } .alert.warn b { background: var(--warn); color: var(--card); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.tile .v { font: 700 28px/1.1 var(--f-body); font-variant-numeric: tabular-nums; margin-top: 6px; letter-spacing: -.01em; }
+.tile .s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.charts { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 820px) { .charts { grid-template-columns: minmax(0, 1fr); } }
+.chart h3 { margin: 0; font-size: 15px; font-weight: 700; display: flex; justify-content: space-between; gap: 8px; }
+.chart h3 span { font: 500 12px var(--f-mono); color: var(--muted); }
+.chart svg { width: 100%; height: 190px; display: block; margin-top: 8px; overflow: visible; }
+.chart svg text { fill: var(--muted); font: 10.5px var(--f-mono); }
+.chart svg .grid { stroke: var(--grid); stroke-width: 1; }
+.legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--card); font: 12.5px var(--f-mono); padding: 6px 9px; border-radius: 6px; z-index: 30; white-space: nowrap; }
+.src { display: grid; gap: 8px; margin-top: 12px; }
+.src div { display: grid; grid-template-columns: 120px 1fr 36px; gap: 8px; align-items: center; font-size: 13px; }
+.src i { display: block; height: 8px; border-radius: 0 4px 4px 0; background: var(--bar); min-width: 2px; }
+.src em { font-style: normal; font: 12px var(--f-mono); color: var(--muted); text-align: right; }
+
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.tabs button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-weight: 600; font-size: 14px; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.tabs button .n { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 99px; background: var(--lamp); color: var(--lamp-ink); font: 600 11px/18px var(--f-mono); text-align: center; }
+.pill { display: inline-block; font: 600 11px var(--f-mono); padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.good { color: var(--good); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); } .pill.mute { color: var(--muted); }
+
+/* Leads */
+.leads { display: grid; gap: 10px; }
+.lead { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 14px; }
+.lead.new { border-left: 4px solid var(--lamp); }
+@media (max-width: 760px) { .lead { grid-template-columns: minmax(0, 1fr); } }
+.lead .who { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.lead .who b { font-size: 16.5px; }
+.lead .who a { font: 600 15px var(--f-mono); text-decoration: none; }
+.lead .meta { font: 12px var(--f-mono); color: var(--muted); }
+.lead .txt { margin: 6px 0 0; white-space: pre-wrap; font-size: 14px; }
+.lead .est { font-weight: 700; font-size: 14px; margin-top: 4px; }
+.lead .pics { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.lead .pics a { position: relative; }
+.lead .pics img { width: 80px; height: 64px; object-fit: cover; border-radius: 8px; display: block; background: var(--soft); }
+.lead .pics span { position: absolute; left: 4px; top: 4px; font: 600 9.5px var(--f-mono); background: rgba(10,14,18,.65); color: #fff; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; }
+.lead .side { display: grid; gap: 8px; align-content: start; }
+.lead textarea { min-height: 54px; resize: vertical; font-size: 13.5px; }
+
+/* Projects */
+.projs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.pj { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; align-content: start; }
+.pj.on { border-color: var(--lamp); box-shadow: 0 0 0 2px var(--lamp); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--line); }
+.pair figure { margin: 0; position: relative; aspect-ratio: 4 / 3; background: var(--soft); }
+.pair img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pair figcaption { position: absolute; left: 6px; top: 6px; font: 600 10.5px var(--f-mono); text-transform: uppercase; background: rgba(10,14,18,.65); color: #fff; padding: 2px 7px; border-radius: 4px; }
+.pair .ph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 12.5px; }
+.pj .m { padding: 10px 12px 12px; display: grid; gap: 8px; font-size: 13px; }
+.pj .m .form { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.pj .m input, .pj .m select { padding: 5px 8px; font-size: 13px; }
+.pj label.c { display: flex; gap: 6px; align-items: center; font-weight: 600; cursor: pointer; }
+.picker { display: flex; gap: 8px; align-items: center; }
+.picker img { width: 56px; height: 42px; object-fit: cover; border-radius: 6px; }
+
+.vizg { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--grid); font-size: 14px; }
+.prow input { text-align: right; }
+.sys { display: grid; gap: 8px; }
+.sys div { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--grid); }
+@media (max-width: 600px) { .sys div { grid-template-columns: 1fr; gap: 2px; } }
+.okd { color: var(--good); font-weight: 700; } .nod { color: var(--bad); font-weight: 700; }
+code { font: 13px var(--f-mono); background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="login card" id="login">
+    <div class="label">Админка сайта</div>
+    <label for="pass" style="font-weight:700">Пароль администратора</label>
+    <input type="password" id="pass" autocomplete="current-password">
+    <button class="btn solid" id="loginBtn" type="button" style="justify-content:center">Войти</button>
+    <div class="msg err" id="loginMsg"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="top">
+      <h1><span id="brand">Сайт</span> <small>админка</small></h1>
+      <div class="row">
+        <a class="btn" href="/" target="_blank" rel="noopener">Сайт ↗</a>
+        <a class="btn" href="/seo">Блог и SEO</a>
+        <button class="btn" id="reload" type="button">Обновить</button>
+        <button class="btn" id="logout" type="button">Выйти</button>
+      </div>
+    </div>
+
+    <div class="alerts" id="alerts"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="charts">
+      <div class="card chart"><h3>Заявки по дням <span>14 дней</span></h3><svg id="chL" role="img" aria-label="Заявки по дням"></svg><div class="legend"><span><i style="background:var(--bar)"></i>заявки</span><span><i style="background:var(--bar2)"></i>визуализации</span></div></div>
+      <div class="card chart"><h3>Откуда заявки <span>всё время</span></h3><div class="src" id="src"></div></div>
+    </div>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="leads" aria-selected="true">Заявки<span class="n" id="newN" hidden></span></button>
+      <button role="tab" data-tab="projects" aria-selected="false">Проекты «до/после»</button>
+      <button role="tab" data-tab="viz" aria-selected="false">Визуализатор</button>
+      <button role="tab" data-tab="biz" aria-selected="false">Компания</button>
+      <button role="tab" data-tab="prices" aria-selected="false">Цены</button>
+      <button role="tab" data-tab="sys" aria-selected="false">Система</button>
+    </div>
+
+    <!-- Заявки -->
+    <section data-panel="leads" class="stack">
+      <div class="card row">
+        <select id="lStatus" style="width:auto"><option value="">Все статусы</option></select>
+        <select id="lSource" style="width:auto"><option value="">Все источники</option><option value="hero">Быстрая форма</option><option value="form">Форма заявки</option><option value="calc">Калькулятор</option><option value="viz">Визуализатор</option></select>
+        <input type="text" id="lSearch" placeholder="Поиск: имя, телефон, текст" style="max-width:280px">
+        <span class="hint" style="margin-left:auto" id="lCount"></span>
+      </div>
+      <div class="leads" id="leads"></div>
+    </section>
+
+    <!-- Проекты -->
+    <section data-panel="projects" class="stack" hidden>
+      <div class="card stack">
+        <div class="label">Новый проект</div>
+        <p class="hint">Фото «до» и «после» снимайте с одной точки и под одним углом: так сравнение на сайте смотрится убедительно. Публикуйте только с согласия владельца жилья, без лиц и номеров домов.</p>
+        <div class="form">
+          <div class="fld"><span class="label">Фото «до»</span><div class="picker"><button class="btn" id="npB" type="button">Выбрать</button><img id="npBp" alt="" hidden></div></div>
+          <div class="fld"><span class="label">Фото «после»</span><div class="picker"><button class="btn" id="npA" type="button">Выбрать</button><img id="npAp" alt="" hidden></div></div>
+          <div class="fld"><label class="label" for="npType">Тип работ</label><select id="npType"></select></div>
+          <div class="fld"><label class="label" for="npCity">Город / район</label><input type="text" id="npCity" placeholder="Playa de San Juan"></div>
+          <div class="fld"><label class="label" for="npArea">Площадь, м²</label><input type="number" id="npArea" min="0" step="0.5" placeholder="5"></div>
+          <div class="fld"><label class="label" for="npDays">Дней работы</label><input type="number" id="npDays" min="0" placeholder="10"></div>
+          <div class="fld" style="grid-column:span 2"><label class="label" for="npCap">Подпись (необязательно, иначе тип работ)</label><input type="text" id="npCap" maxlength="80" placeholder="Baño con microcemento y ducha de obra"></div>
+        </div>
+        <div class="row"><button class="btn solid" id="npSave" type="button">Добавить на сайт</button><span class="msg" id="npMsg"></span></div>
+        <input type="file" id="npFile" accept="image/*" hidden>
+      </div>
+      <div class="projs" id="projs"></div>
+    </section>
+
+    <!-- Визуализатор -->
+    <section data-panel="viz" class="stack" hidden>
+      <div class="card stack">
+        <div class="label">Настройки визуализатора</div>
+        <p class="hint">Посетитель загружает фото своей ванной и получает вариант ремонта от нейросети (fal.ai). Чтобы увидеть результат, он оставляет имя и телефон: каждая визуализация — это заявка. Лимиты защищают баланс fal.ai.</p>
+        <label class="row" style="font-weight:700"><input type="checkbox" id="vOn" style="width:18px;height:18px"> Визуализатор включён на сайте</label>
+        <div class="form">
+          <div class="fld"><label class="label" for="vModel">Модель</label><select id="vModel"></select></div>
+          <div class="fld"><label class="label" for="vCap">Максимум в день (на весь сайт)</label><input type="number" id="vCap" min="0" max="1000"></div>
+          <div class="fld"><label class="label" for="vPer">На один телефон в сутки</label><input type="number" id="vPer" min="1" max="20"></div>
+        </div>
+        <div class="row"><button class="btn solid" id="vSave" type="button">Сохранить</button><span class="msg" id="vMsg"></span></div>
+      </div>
+      <div class="vizg" id="vizg"></div>
+    </section>
+
+    <!-- Компания -->
+    <section data-panel="biz" class="stack" hidden>
+      <div class="card stack">
+        <div class="label">Данные компании (NAP)</div>
+        <p class="hint">Название, адрес и телефон должны совпадать буква в букву с профилем Google Business и каталогами (Páginas Amarillas, Habitissimo, Cronoshare). Это главный сигнал локального поиска.</p>
+        <div class="form">
+          <div class="fld"><label class="label" for="bName">Название</label><input type="text" id="bName"></div>
+          <div class="fld"><label class="label" for="bPhone">Телефон</label><input type="text" id="bPhone" placeholder="+34 600 000 000"></div>
+          <div class="fld"><label class="label" for="bWa">WhatsApp (если другой)</label><input type="text" id="bWa"></div>
+          <div class="fld"><label class="label" for="bEmail">Email</label><input type="text" id="bEmail"></div>
+          <div class="fld"><label class="label" for="bStreet">Улица и дом</label><input type="text" id="bStreet" placeholder="Calle ..., 12"></div>
+          <div class="fld"><label class="label" for="bPostal">Индекс</label><input type="text" id="bPostal" placeholder="03001"></div>
+          <div class="fld"><label class="label" for="bCity">Город</label><input type="text" id="bCity"></div>
+          <div class="fld"><label class="label" for="bRegion">Провинция</label><input type="text" id="bRegion"></div>
+          <div class="fld"><label class="label" for="bNif">NIF / CIF</label><input type="text" id="bNif"></div>
+          <div class="fld"><label class="label" for="bGuar">Гарантия, лет</label><input type="number" id="bGuar" min="1" max="10"></div>
+          <div class="fld"><label class="label" for="bHours">Часы работы (текст на сайте)</label><input type="text" id="bHours" placeholder="L–V 8:00–19:00"></div>
+          <div class="fld"><label class="label" for="bOh">Часы для Google (schema)</label><input type="text" id="bOh" placeholder="Mo-Fr 08:00-19:00"></div>
+          <div class="fld"><label class="label" for="bLat">Широта</label><input type="text" id="bLat"></div>
+          <div class="fld"><label class="label" for="bLng">Долгота</label><input type="text" id="bLng"></div>
+        </div>
+        <div class="fld"><label class="label" for="bGbp">Ссылка на профиль Google Business (отзывы)</label><input type="text" id="bGbp" placeholder="https://g.page/r/..."></div>
+        <div class="fld"><label class="label" for="bAreas">Города и районы обслуживания (через запятую)</label><textarea id="bAreas" rows="2"></textarea></div>
+        <div class="row"><button class="btn solid" id="bSave" type="button">Сохранить</button><span class="msg" id="bMsg"></span></div>
+      </div>
+    </section>
+
+    <!-- Цены -->
+    <section data-panel="prices" class="stack" hidden>
+      <div class="prices">
+        <div class="card stack">
+          <div class="label">Цены «от» на услуги, € без IVA</div>
+          <div id="svcBox"></div>
+        </div>
+        <div class="card stack">
+          <div class="label">Калькулятор на сайте, €</div>
+          <div id="calcBox"></div>
+          <p class="hint">Оценка = площадь × цена за м² + доп. опции (тёплый пол — за м²). Сайт показывает диапазон −10% … +15% и не меньше минимального заказа.</p>
+        </div>
+      </div>
+      <div class="row"><button class="btn solid" id="pSave" type="button">Сохранить цены</button><span class="msg" id="pMsg"></span></div>
+    </section>
+
+    <section data-panel="sys" class="card" hidden><div class="sys" id="sys"></div></section>
+  </div>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const ss = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} }, del(k) { try { sessionStorage.removeItem(k); } catch {} } };
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const num = v => new Intl.NumberFormat("ru-RU").format(v || 0);
+  const date = ts => new Date(ts).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const say = (id, t, k = "") => { $(id).className = "msg" + (k ? " " + k : ""); $(id).textContent = t; };
+  const STATUS = { new: ["новая", "warn"], contacted: ["связались", "mute"], visit: ["замер назначен", "mute"], quote: ["смета отправлена", "mute"], won: ["договор", "good"], lost: ["отказ", "bad"] };
+  const SRC = { hero: "быстрая форма", form: "форма заявки", calc: "калькулятор", viz: "визуализатор" };
+  let pass = ss.get("rb_admin") || "", stats = null, leads = [], cfg = null, tab = "leads";
+
+  async function api(path, body) {
+    const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "content-type": "application/json", "x-admin": pass }, body: body ? JSON.stringify(body) : undefined });
+    let d = {}; try { d = await r.json(); } catch {}
+    if (!r.ok) { const e = new Error(d.error || "Ошибка " + r.status); e.status = r.status; throw e; }
+    return d;
+  }
+  function toJpeg(f, max = 1600) {
+    return new Promise((ok, bad) => {
+      const img = new Image(), u = URL.createObjectURL(f);
+      img.onload = () => { const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)); const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k); const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u); ok(c.toDataURL("image/jpeg", 0.88)); };
+      img.onerror = () => { URL.revokeObjectURL(u); bad(new Error("Не удалось открыть фото. Сохраните его как JPG.")); };
+      img.src = u;
+    });
+  }
+  function alertMsg(m) { const d = document.createElement("div"); d.className = "alert bad"; d.innerHTML = `<b>Ошибка</b><span>${esc(m)}</span>`; $("alerts").prepend(d); setTimeout(() => d.remove(), 5000); }
+
+  async function login() {
+    pass = $("pass").value || pass;
+    $("loginMsg").textContent = "";
+    try { stats = await api("/api/admin/stats"); ss.set("rb_admin", pass); $("login").hidden = true; $("app").hidden = false; renderAll(); loadTab(); }
+    catch (e) { $("loginMsg").textContent = e.message; $("login").hidden = false; $("app").hidden = true; }
+  }
+  $("loginBtn").onclick = login;
+  $("pass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  $("logout").onclick = () => { ss.del("rb_admin"); location.reload(); };
+  $("reload").onclick = async () => { stats = await api("/api/admin/stats"); renderAll(); loadTab(); };
+
+  function renderAll() {
+    $("brand").textContent = stats.brand;
+    const s = stats.system, a = [];
+    if (!s.persistent) a.push(["bad", "Данные", "Volume не подключён: заявки, фото и статьи пропадут при перезапуске. Railway → правый клик по сервису → Attach volume → Mount path: /data → Deploy."]);
+    if (!s.biz) a.push(["bad", "Телефон", "Не указан телефон компании: на сайте нет кнопки «Позвонить». Вкладка «Компания»."]);
+    if (!s.telegram) a.push(["warn", "Уведомления", "Заявки не приходят в Telegram. Создайте бота у @BotFather и добавьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в Railway → Variables."]);
+    if (!s.falOk) a.push(["warn", "fal.ai", s.fal + ". Визуализатор и ИИ-статьи не работают."]);
+    if (!s.publicUrl) a.push(["warn", "Домен", "Не задан PUBLIC_URL (например https://reformasbano-alicante.es). Нужен для sitemap и canonical."]);
+    $("alerts").innerHTML = a.map(([k, t, m]) => `<div class="alert ${k}"><b>${t}</b><span>${esc(m)}</span></div>`).join("");
+    const L = stats.leads;
+    $("tiles").innerHTML = [
+      ["Заявки сегодня", num(L.today), `новых без ответа: ${num(L.fresh)}`],
+      ["Заявки за 7 дней", num(L.week), `30 дней: ${num(L.month)}`],
+      ["Всего заявок", num(L.total), `договоров: ${num(L.won)}${L.total ? " · " + Math.round(L.won / L.total * 100) + "%" : ""}`],
+      ["Визуализации", num(stats.viz.done), `запусков: ${num(stats.viz.total)}`],
+      ["Расход fal.ai ≈", "$" + stats.viz.cost.toFixed(2), "на визуализатор"],
+    ].map(([l, v, s]) => `<div class="card tile"><div class="label">${l}</div><div class="v">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join("");
+    $("newN").hidden = !L.fresh; $("newN").textContent = L.fresh;
+    bars();
+    const max = Math.max(1, ...Object.values(stats.bySource));
+    $("src").innerHTML = Object.entries(stats.bySource).map(([k, v]) => `<div><span>${SRC[k]}</span><i style="width:${(v / max * 100).toFixed(1)}%"></i><em>${num(v)}</em></div>`).join("");
+    const row = (k, ok, v) => `<div><span class="label">${k}</span><span class="${ok ? "okd" : "nod"}">${ok ? "✓" : "✕"} <span style="font-weight:400;color:var(--ink)">${esc(v)}</span></span></div>`;
+    $("sys").innerHTML = [
+      row("Хранение данных", s.persistent, s.persistent ? "Volume: " + s.dataDir : "Volume не подключён"),
+      row("PUBLIC_URL", !!s.publicUrl, s.publicUrl || "не задан"),
+      row("fal.ai", s.falOk, s.fal),
+      row("Telegram", s.telegram, s.telegram ? "заявки приходят в Telegram" : "нет TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID"),
+    ].join("");
+  }
+
+  // Grouped bars: leads + visualisations per day
+  function bars() {
+    const svg = $("chL"), days = stats.days;
+    const W = svg.clientWidth || 600, H = 190, pl = 34, pb = 22, pt = 8;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const max = Math.max(...days.map(d => Math.max(d.leads, d.viz)), 0);
+    const step = max <= 4 ? 1 : (() => { const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; })();
+    const top = Math.max(step * Math.ceil(max / step), step);
+    const y = v => pt + (H - pt - pb) * (1 - v / top), bw = (W - pl) / days.length;
+    const cs = getComputedStyle(document.documentElement), c1 = cs.getPropertyValue("--bar").trim(), c2 = cs.getPropertyValue("--bar2").trim();
+    let o = "";
+    for (let v = 0; v <= top; v += step) o += `<line class="grid" x1="${pl}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text x="${pl - 6}" y="${y(v) + 3.5}" text-anchor="end">${v}</text>`;
+    const bar = (x, w, v, c) => { const yy = y(v), h = y(0) - yy, r = Math.min(3, w / 2, h); return h > 0 ? `<path d="M${x},${y(0)} V${yy + r} Q${x},${yy} ${x + r},${yy} H${x + w - r} Q${x + w},${yy} ${x + w},${yy + r} V${y(0)} Z" fill="${c}" pointer-events="none"/>` : ""; };
+    days.forEach((d, i) => {
+      const lbl = new Date(d.day).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+      const w = Math.max(2, (bw - 6) / 2), x = pl + i * bw + 2;
+      o += `<rect x="${pl + i * bw}" y="${pt}" width="${bw}" height="${H - pt - pb}" fill="transparent" data-tip="${lbl}: заявок ${d.leads}, визуализаций ${d.viz}"/>`;
+      o += bar(x, w, d.leads, c1) + bar(x + w + 2, w, d.viz, c2);
+      if (i % 2 === 1) o += `<text x="${pl + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${lbl}</text>`;
+    });
+    o += `<line x1="${pl}" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)"/>`;
+    svg.innerHTML = o;
+    svg.querySelectorAll("rect").forEach(r => {
+      r.addEventListener("mousemove", e => { const t = $("tip"); t.hidden = false; t.textContent = r.dataset.tip; t.style.left = e.clientX + 12 + "px"; t.style.top = e.clientY - 30 + "px"; });
+      r.addEventListener("mouseleave", () => $("tip").hidden = true);
+    });
+  }
+  addEventListener("resize", () => stats && bars());
+
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = () => { tab = b.dataset.tab; $("tabs").querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", String(x === b))); document.querySelectorAll("[data-panel]").forEach(p => p.hidden = p.dataset.panel !== tab); loadTab(); });
+  async function loadTab() {
+    try {
+      if (tab === "leads") { leads = await api("/api/admin/leads"); renderLeads(); }
+      if (tab === "projects") { await getCfg(); renderProjects(await api("/api/admin/projects")); }
+      if (tab === "viz") { await getCfg(true); renderVizCfg(); renderViz(await api("/api/admin/viz")); }
+      if (tab === "biz") { await getCfg(true); renderBiz(); }
+      if (tab === "prices") { await getCfg(true); renderPrices(); }
+    } catch (e) { if (e.status === 401) { ss.del("rb_admin"); location.reload(); } else alertMsg(e.message); }
+  }
+  async function getCfg(force) { if (!cfg || force) cfg = await api("/api/admin/settings"); }
+
+  // ---------- заявки ----------
+  $("lStatus").innerHTML += Object.entries(STATUS).map(([k, [n]]) => `<option value="${k}">${n}</option>`).join("");
+  ["lStatus", "lSource"].forEach(id => $(id).onchange = renderLeads);
+  $("lSearch").oninput = renderLeads;
+  function renderLeads() {
+    const st = $("lStatus").value, so = $("lSource").value, q = $("lSearch").value.trim().toLowerCase();
+    const list = leads.filter(l => (!st || l.status === st) && (!so || l.source === so) && (!q || `${l.name} ${l.phone} ${l.email} ${l.message} ${l.note}`.toLowerCase().includes(q)));
+    $("lCount").textContent = `показано ${list.length} из ${leads.length}`;
+    const box = $("leads"); box.innerHTML = "";
+    if (!list.length) { box.innerHTML = `<div class="card hint">${leads.length ? "Ничего не найдено." : "Заявок пока нет. Как только посетитель оставит телефон, заявка появится здесь (и в Telegram, если он подключён)."}</div>`; return; }
+    list.slice(0, 300).forEach(l => {
+      const d = document.createElement("div"); d.className = "lead" + (l.status === "new" ? " new" : "");
+      const tel = "tel:" + String(l.phone).replace(/[^\d+]/g, "");
+      let wa = String(l.phone).replace(/\D/g, ""); if (wa.length === 9) wa = "34" + wa;
+      const pics = [...l.photos.map((u, i) => [u, l.source === "viz" ? "до" : "фото " + (i + 1)]), ...(l.viz ? [[l.viz, "ИИ"]] : [])];
+      d.innerHTML = `<div>
+          <div class="who"><b>${esc(l.name)}</b><a href="${esc(tel)}">${esc(l.phone)}</a>${l.email ? `<a href="mailto:${esc(l.email)}" style="font-family:var(--f-body);font-weight:400;font-size:14px">${esc(l.email)}</a>` : ""}</div>
+          <div class="meta">${date(l.created)} · ${SRC[l.source] || l.source} · ${l.lang.toUpperCase()}</div>
+          ${l.message ? `<p class="txt">${esc(l.message)}</p>` : ""}
+          ${l.estimate ? `<div class="est">Оценка калькулятора: ${esc(l.estimate)}</div>` : ""}
+          ${pics.length ? `<div class="pics">${pics.map(([u, c]) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="" loading="lazy"><span>${c}</span></a>`).join("")}</div>` : ""}
+        </div>
+        <div class="side">
+          <select aria-label="Статус">${Object.entries(STATUS).map(([k, [n]]) => `<option value="${k}" ${k === l.status ? "selected" : ""}>${n}</option>`).join("")}</select>
+          <textarea placeholder="Заметка: дата замера, сумма сметы…" aria-label="Заметка">${esc(l.note)}</textarea>
+          <div class="row"><a class="btn sm" href="${esc(tel)}">Позвонить</a><a class="btn sm" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a><button class="btn sm danger" type="button" aria-label="Удалить">✕</button></div>
+        </div>`;
+      const sel = d.querySelector("select"), note = d.querySelector("textarea");
+      const upd = async (body) => { try { Object.assign(l, await api("/api/admin/leads/update", { id: l.id, ...body })); d.classList.toggle("new", l.status === "new"); } catch (e) { alertMsg(e.message); } };
+      sel.onchange = () => upd({ status: sel.value });
+      note.onchange = () => upd({ note: note.value });
+      d.querySelector(".danger").onclick = async () => { if (!confirm(`Удалить заявку ${l.name}? Фото тоже удалятся.`)) return; await api("/api/admin/leads/delete", { id: l.id }); leads = leads.filter(x => x.id !== l.id); renderLeads(); };
+      box.appendChild(d);
+    });
+  }
+
+  // ---------- проекты ----------
+  let npImgs = { before: null, after: null }, pick = null, replace = null;
+  $("npB").onclick = () => { pick = "before"; replace = null; $("npFile").click(); };
+  $("npA").onclick = () => { pick = "after"; replace = null; $("npFile").click(); };
+  $("npFile").onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try {
+      const img = await toJpeg(f);
+      if (replace) { renderProjects(await api("/api/admin/projects/update", { id: replace.id, which: replace.which, image: img })); replace = null; return; }
+      npImgs[pick] = img; const p = $(pick === "before" ? "npBp" : "npAp"); p.src = img; p.hidden = false;
+    } catch (err) { alertMsg(err.message); }
+  };
+  $("npSave").onclick = async () => {
+    if (!npImgs.before || !npImgs.after) return say("npMsg", "Выберите оба фото.", "err");
+    $("npSave").disabled = true; say("npMsg", "Загружаем…");
+    try {
+      renderProjects(await api("/api/admin/projects", { before: npImgs.before, after: npImgs.after, type: $("npType").value, city: $("npCity").value, area: $("npArea").value, days: $("npDays").value, caption: $("npCap").value }));
+      npImgs = { before: null, after: null }; $("npBp").hidden = $("npAp").hidden = true; ["npCity", "npArea", "npDays", "npCap"].forEach(id => $(id).value = "");
+      say("npMsg", "Проект добавлен и уже на сайте.", "ok");
+    } catch (e) { say("npMsg", e.message, "err"); }
+    $("npSave").disabled = false;
+  };
+  function renderProjects(list) {
+    const opts = Object.entries(cfg.serviceNames).map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("");
+    if (!$("npType").options.length) $("npType").innerHTML = opts;
+    const box = $("projs"); box.innerHTML = "";
+    if (!list.length) { box.innerHTML = `<p class="hint">Проектов пока нет. Блок «До и после» на сайте скрыт, пока вы не добавите первый. Лучше всего работают 3–6 разных проектов.</p>`; return; }
+    list.forEach(p => {
+      const d = document.createElement("div"); d.className = "pj" + (p.published ? " on" : "");
+      d.innerHTML = `<div class="pair"><figure><img src="${esc(p.before)}" alt=""><figcaption>до</figcaption></figure><figure><img src="${esc(p.after)}" alt=""><figcaption>после</figcaption></figure></div>
+        <div class="m">
+          <div class="form"><select data-k="type">${opts}</select><input type="text" data-k="city" placeholder="Город"><input type="number" data-k="area" placeholder="м²" step="0.5"><input type="number" data-k="days" placeholder="дней"></div>
+          <input type="text" data-k="caption" placeholder="Подпись" maxlength="80">
+          <div class="row"><label class="c"><input type="checkbox" data-k="published"> На сайте</label><label class="c"><input type="checkbox" data-k="featured"> Первым</label></div>
+          <div class="row"><button class="btn sm" data-a="b" type="button">Заменить «до»</button><button class="btn sm" data-a="a" type="button">Заменить «после»</button><button class="btn sm solid" data-a="s" type="button">Сохранить</button><button class="btn sm danger" data-a="rm" type="button" aria-label="Удалить">✕</button></div>
+        </div>`;
+      const f = k => d.querySelector(`[data-k="${k}"]`);
+      f("type").value = p.type; f("city").value = p.city || ""; f("area").value = p.area || ""; f("days").value = p.days || ""; f("caption").value = p.caption || "";
+      f("published").checked = !!p.published; f("featured").checked = !!p.featured;
+      const saveP = async () => { try { renderProjects(await api("/api/admin/projects/update", { id: p.id, type: f("type").value, city: f("city").value, area: f("area").value, days: f("days").value, caption: f("caption").value, published: f("published").checked, featured: f("featured").checked })); } catch (e) { alertMsg(e.message); } };
+      d.querySelector('[data-a="s"]').onclick = saveP;
+      f("published").onchange = saveP; f("featured").onchange = saveP;
+      d.querySelector('[data-a="b"]').onclick = () => { replace = { id: p.id, which: "before" }; $("npFile").click(); };
+      d.querySelector('[data-a="a"]').onclick = () => { replace = { id: p.id, which: "after" }; $("npFile").click(); };
+      d.querySelector('[data-a="rm"]').onclick = async () => { if (!confirm("Удалить проект с сайта?")) return; renderProjects(await api("/api/admin/projects/delete", { id: p.id })); };
+      box.appendChild(d);
+    });
+  }
+
+  // ---------- визуализатор ----------
+  function renderVizCfg() {
+    const v = cfg.viz;
+    $("vOn").checked = v.enabled;
+    $("vModel").innerHTML = cfg.vizModels.map(m => `<option value="${esc(m.id)}" ${m.id === v.model ? "selected" : ""}>${esc(m.name)} · ≈ $${m.cost.toFixed(2)}</option>`).join("");
+    $("vCap").value = v.dailyCap; $("vPer").value = v.perPhone;
+  }
+  $("vSave").onclick = async () => {
+    try { await api("/api/admin/settings", { viz: { enabled: $("vOn").checked, model: $("vModel").value, dailyCap: $("vCap").value, perPhone: $("vPer").value } }); say("vMsg", "Сохранено. Изменения уже на сайте.", "ok"); }
+    catch (e) { say("vMsg", e.message, "err"); }
+  };
+  let vizPoll = null;
+  function renderViz(list) {
+    const box = $("vizg"); box.innerHTML = "";
+    const sname = id => cfg.vizStyles.find(s => s.id === id)?.name || id;
+    if (!list.length) box.innerHTML = `<p class="hint">Визуализаций пока не было.</p>`;
+    list.forEach(v => {
+      const d = document.createElement("div"); d.className = "pj";
+      const fig = (src, cap, ph) => `<figure>${src ? `<a href="${esc(src)}" target="_blank" rel="noopener"><img src="${esc(src)}" alt="" loading="lazy"></a>` : `<div class="ph">${ph}</div>`}<figcaption>${cap}</figcaption></figure>`;
+      const ph = v.status === "working" ? "генерируется…" : v.status === "failed" ? "ошибка" : "удалено";
+      d.innerHTML = `<div class="pair">${fig(v.before, "фото", "удалено")}${fig(v.after, "ИИ", ph)}</div><div class="m"><b>${esc(v.name || "—")} · ${esc(sname(v.style))}</b><span class="hint">${date(v.created)}</span>${v.status === "failed" ? `<span style="color:var(--bad)">${esc(v.error || "")}</span>` : ""}</div>`;
+      box.appendChild(d);
+    });
+    clearTimeout(vizPoll);
+    if (list.some(v => v.status === "working") && tab === "viz") vizPoll = setTimeout(async () => { try { renderViz(await api("/api/admin/viz")); } catch {} }, 5000);
+  }
+
+  // ---------- компания ----------
+  const BF = { bName: "name", bPhone: "phone", bWa: "whatsapp", bEmail: "email", bStreet: "street", bPostal: "postal", bCity: "city", bRegion: "region", bNif: "nif", bGuar: "guarantee", bHours: "hours", bOh: "openingHours", bLat: "lat", bLng: "lng", bGbp: "gbp" };
+  function renderBiz() {
+    for (const [id, k] of Object.entries(BF)) $(id).value = cfg.biz[k] ?? "";
+    $("bAreas").value = cfg.biz.areas.join(", ");
+  }
+  $("bSave").onclick = async () => {
+    const biz = Object.fromEntries(Object.entries(BF).map(([id, k]) => [k, $(id).value]));
+    biz.areas = $("bAreas").value;
+    try { await api("/api/admin/settings", { biz }); stats = await api("/api/admin/stats"); renderAll(); say("bMsg", "Сохранено. Данные уже на сайте и в разметке для Google.", "ok"); }
+    catch (e) { say("bMsg", e.message, "err"); }
+  };
+
+  // ---------- цены ----------
+  const CALC_N = { min: "Минимальный заказ", partial: "Частичный ремонт, за м²", full: "Ремонт под ключ, за м²", premium: "Премиум, за м²", screen: "Стеклянная перегородка", vanity: "Подвесная тумба", floor: "Тёплый пол, за м²", access: "Адаптация для пожилых" };
+  function renderPrices() {
+    $("svcBox").innerHTML = Object.entries(cfg.serviceNames).map(([k, n]) => `<div class="prow"><label for="sv_${k}">${esc(n)}${k === "tiles" ? " (за м²)" : ""}</label><input type="number" id="sv_${k}" min="0" value="${cfg.services[k]}"></div>`).join("");
+    $("calcBox").innerHTML = Object.entries(CALC_N).map(([k, n]) => `<div class="prow"><label for="cc_${k}">${n}</label><input type="number" id="cc_${k}" min="0" value="${cfg.calc[k]}"></div>`).join("");
+  }
+  $("pSave").onclick = async () => {
+    const services = Object.fromEntries(Object.keys(cfg.serviceNames).map(k => [k, $("sv_" + k).value]));
+    const calc = Object.fromEntries(Object.keys(CALC_N).map(k => [k, $("cc_" + k).value]));
+    try { await api("/api/admin/settings", { services, calc }); say("pMsg", "Сохранено. Новые цены уже на сайте.", "ok"); }
+    catch (e) { say("pMsg", e.message, "err"); }
+  };
+
+  if (pass) login(); else $("pass").focus();
+})();
+</script>
+</body>
+</html>

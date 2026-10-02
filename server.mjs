@@ -91,7 +91,7 @@ function biz() {
     phone: b.phone || process.env.BUSINESS_PHONE || "",
     whatsapp: b.whatsapp || "",
     email: b.email || process.env.CONTACT_EMAIL || "",
-    street: b.street || "", postal: b.postal || "", city: b.city || "Alicante", region: b.region || "Alicante",
+    street: b.street || "", postal: b.postal || "", city: b.city || "Alicante", cityRu: b.cityRu || "Аликанте", region: b.region || "Alicante",
     hours: b.hours || "", openingHours: b.openingHours || "Mo-Fr 08:00-19:00",
     guarantee: b.guarantee || 2, gbp: b.gbp || "", nif: b.nif || "",
     areas: Array.isArray(b.areas) && b.areas.length ? b.areas : AREAS_DEFAULT,
@@ -298,7 +298,7 @@ const HOME_T = {
     "nav.services": "Услуги", "nav.projects": "Работы", "nav.prices": "Цены", "nav.viz": "Визуализатор", "nav.blog": "Блог", "nav.faq": "Вопросы",
     "cta.quote": "Бесплатная смета", "cta.call": "Позвонить", "cta.wa": "WhatsApp",
     "hero.eyebrow": "Ремонт ванных комнат · {city}",
-    "hero.title": "Ремонт ванной в Аликанте <em>по фиксированной цене</em>",
+    "hero.title": "Ремонт ванной в {cityRu} <em>по фиксированной цене</em>",
     "hero.lead": "Меняем ванну на душ, кладём плитку, обновляем сантехнику и сдаём готовую ванную. Одна бригада от начала до конца и смета, которая не растёт.",
     "fact.1": "Бесплатный выезд и смета", "fact.2": "Фиксированная цена в договоре", "fact.3": "Гарантия {g} года",
     "quick.t": "Перезвоним бесплатно", "quick.p": "Оставьте телефон: перезвоним в тот же рабочий день и договоримся о замере. Говорим по-русски.", "quick.go": "Перезвоните мне",
@@ -315,7 +315,7 @@ const HOME_T = {
     "how.3t": "Аккуратная работа", "how.3p": "Защищаем квартиру, вывозим мусор и сообщаем о каждом этапе.",
     "how.4t": "Сдача и гарантия", "how.4p": "Вместе принимаем результат, гарантия оформляется письменно.",
     "proj.eyebrow": "Работы", "proj.title": "До и после", "proj.lead": "Реальные ванные, которые мы отремонтировали. Потяните разделитель, чтобы сравнить.", "proj.before": "до", "proj.after": "после", "proj.days": "дн.",
-    "price.eyebrow": "Цены", "price.title": "Сколько стоит ремонт ванной в Аликанте", "price.lead": "Ориентировочные цены без IVA. После замера даём фиксированную смету письменно.",
+    "price.eyebrow": "Цены", "price.title": "Сколько стоит ремонт ванной в {cityRu}", "price.lead": "Ориентировочные цены без IVA. После замера даём фиксированную смету письменно.",
     "calc.title": "Рассчитайте стоимость", "calc.area": "Площадь ванной", "calc.level": "Тип ремонта",
     "calc.partial": "Частичный", "calc.partialD": "Душ, сантехника или плитка", "calc.full": "Под ключ", "calc.fullD": "Всё новое, включая коммуникации", "calc.premium": "Премиум", "calc.premiumD": "Крупный формат, микроцемент, скрытый монтаж",
     "calc.extras": "Дополнительно", "calc.screen": "Стеклянная душевая перегородка", "calc.vanity": "Подвесная тумба с раковиной", "calc.floor": "Тёплый пол", "calc.access": "Адаптация для пожилых",
@@ -326,7 +326,7 @@ const HOME_T = {
     "viz.go": "Показать ванную после ремонта", "viz.wait": "Проектируем вашу ванную… обычно 30–60 секунд", "viz.done": "Так может выглядеть ваша ванная. Мы перезвоним и обсудим ремонт.",
     "viz.note": "Иллюстрация создана ИИ. Реальный результат зависит от работ и материалов.", "viz.again": "Попробовать другое фото",
     "st.modern": "Современный, микроцемент", "st.white": "Белый минимализм", "st.med": "Средиземноморский", "st.spa": "Дерево и камень", "st.dark": "Тёмный элегантный", "st.marble": "Классический мрамор",
-    "areas.eyebrow": "Где работаем", "areas.title": "Ремонт ванных в Аликанте и окрестностях", "areas.lead": "Работаем в {city} и соседних городах. Если вашего нет в списке, спросите.",
+    "areas.eyebrow": "Где работаем", "areas.title": "Ремонт ванных в {cityRu} и окрестностях", "areas.lead": "Работаем в {cityRu} и соседних городах. Если вашего нет в списке, спросите.",
     "faq.eyebrow": "Вопросы", "faq.title": "Частые вопросы",
     "blog.eyebrow": "Блог", "blog.title": "Советы по ремонту ванной", "blog.all": "Все статьи",
     "contact.eyebrow": "Контакты", "contact.title": "Получите бесплатную смету", "contact.lead": "Расскажите, что хотите сделать. Если можете, приложите фото ванной: так смета будет точнее.",
@@ -334,7 +334,7 @@ const HOME_T = {
     "f.photos": "Фото ванной (необязательно, до 3)", "f.add": "Добавить фото", "f.consent": "Я прочитал(а) и принимаю <a href=\"{privacy}\">политику конфиденциальности</a>.", "f.send": "Отправить заявку",
     "f.sending": "Отправляем…", "f.ok": "Спасибо! Перезвоним в рабочее время, обычно в тот же день.",
     "c.phone": "Телефон", "c.wa": "Написать в WhatsApp", "c.email": "Email", "c.address": "Адрес", "c.hours": "Часы работы", "c.reviews": "Отзывы в Google",
-    "band.t": "Начнём ремонт вашей ванной?", "foot.privacy": "Политика конфиденциальности", "foot.tag": "Ремонт ванных комнат в {city}",
+    "band.t": "Начнём ремонт вашей ванной?", "foot.privacy": "Политика конфиденциальности", "foot.tag": "Ремонт ванных комнат в {cityRu}",
     "e.name": "Укажите имя.", "e.phone": "Проверьте телефон: нужно минимум 9 цифр.", "e.consent": "Примите политику конфиденциальности, чтобы отправить заявку.",
     "e.photo": "Не удалось открыть фото. Сохраните его как JPG и попробуйте снова.", "e.net": "Нет связи с сервером. Проверьте интернет.", "e.max": "Достаточно трёх фото.",
     "e.limit": "Лимит визуализаций на сегодня исчерпан. Мы перезвоним и всё обсудим.", "e.busy": "Визуализатор сегодня перегружен. Оставьте телефон, и мы пришлём вариант.",
@@ -360,7 +360,7 @@ const FAQ_T = {
     ["Do you also handle plumbing and electrics?", "Yes. We renew pipes, drains, lighting points and extraction. You have one point of contact for the whole job."],
   ],
   ru: [
-    ["Сколько стоит ремонт ванной в {city}?", "Зависит от площади, состояния коммуникаций и материалов. Замена ванны на душ — примерно от {pShower}, ремонт под ключ — примерно от {pIntegral}, без IVA. После замера даём фиксированную цену письменно."],
+    ["Сколько стоит ремонт ванной в {cityRu}?", "Зависит от площади, состояния коммуникаций и материалов. Замена ванны на душ — примерно от {pShower}, ремонт под ключ — примерно от {pIntegral}, без IVA. После замера даём фиксированную цену письменно."],
     ["Сколько длится ремонт?", "Замена ванны на душ обычно занимает 1–2 дня. Ремонт стандартной ванной под ключ — 7–15 рабочих дней, в зависимости от материалов и сроков их поставки."],
     ["Нужно ли разрешение мэрии (Ayuntamiento)?", "Ремонт ванной внутри квартиры обычно оформляется как малые работы (obra menor: declaración responsable или лицензия, в зависимости от города). Подскажем, что нужно в вашем случае, и поможем с оформлением."],
     ["Можно жить в квартире во время ремонта?", "Да. Защищаем полы и проходы, ежедневно вывозим мусор, а если ванная единственная, планируем работы так, чтобы вы были без душа как можно меньше."],
@@ -594,7 +594,7 @@ function defaultHome(l) {
   return {
     es: { title: `Reforma de baños en ${b.city} | ${b.name}`, description: `Reformas integrales de baño en ${b.city}: cambio de bañera por plato de ducha, alicatado y fontanería. Presupuesto gratis y cerrado, obra limpia y con garantía.` },
     en: { title: `Bathroom Renovation in ${b.city} | ${b.name}`, description: `Full bathroom renovations in ${b.city}: bath-to-shower conversions, tiling and plumbing. Free fixed-price quote, clean work and a written guarantee.` },
-    ru: { title: `Ремонт ванной в Аликанте под ключ | ${b.name}`, description: "Ремонт ванных комнат в Аликанте под ключ: замена ванны на душ, плитка, сантехника. Бесплатная смета с фиксированной ценой, аккуратная работа и гарантия." },
+    ru: { title: `Ремонт ванной в ${b.cityRu} под ключ | ${b.name}`, description: `Ремонт ванных комнат в ${b.cityRu} под ключ: замена ванны на душ, плитка, сантехника. Бесплатная смета с фиксированной ценой, аккуратная работа и гарантия.` },
   }[l];
 }
 const homeMeta = (l) => ({ title: S.home[l]?.title || defaultHome(l).title, description: S.home[l]?.description || defaultHome(l).description });
@@ -680,7 +680,7 @@ function builtinRules(l) {
   return {
     es: [{ anchors: `reforma de baño en ${c}, reformas de baños en ${c}, reforma de baños en ${c}, reformar el baño en ${c}`, url: "/" }],
     en: [{ anchors: `bathroom renovation in ${c}, bathroom renovations in ${c}, bathroom remodel in ${c}`, url: "/en" }],
-    ru: [{ anchors: "ремонт ванной в Аликанте, ремонт ванных комнат в Аликанте, ремонт ванной под ключ", url: "/ru" }],
+    ru: [{ anchors: `ремонт ванной в ${biz().cityRu}, ремонт ванных комнат в ${biz().cityRu}, ремонт ванной под ключ`, url: "/ru" }],
   }[l];
 }
 function linkRules(l) {
@@ -772,7 +772,7 @@ function audit() {
     C(5, !!S.analytics.ga4, "Подключена аналитика", "Google Analytics 4: видно, откуда приходят заявки."),
     C(5, LANGS.every((l) => { const h = homeMeta(l); return h.title.length <= 65 && h.description.length <= 170; }), "Заголовок и описание главной в норме", "Настройки → главная страница."),
     C(6, publicProjects().length >= 3, `Проектов «до/после» на сайте: ${publicProjects().length} (нужно от 3)`, "Реальные фото работ сильнее всего убеждают позвонить. Админка → Проекты.", publicProjects().length >= 1),
-    C(15, es >= 20, `Статей на испанском: ${es} (цель — от 20, лучше 50+)`, "Основной поиск в Аликанте — на испанском. Трафик растёт от количества полезных страниц по разным запросам.", es >= 5),
+    C(15, es >= 20, `Статей на испанском: ${es} (цель — от 20, лучше 50+)`, "Основной местный поиск — на испанском. Трафик растёт от количества полезных страниц по разным запросам.", es >= 5),
     C(5, published("en").length >= 5, `Статей на английском: ${published("en").length} (нужно от 5)`, "В провинции Аликанте много англоязычных владельцев жилья."),
     C(3, published("ru").length >= 3, `Статей на русском: ${published("ru").length} (нужно от 3)`, "Русскоязычная аудитория — ниша с низкой конкуренцией."),
     C(8, local.length >= 3, `Статей под города и районы: ${local.length} (нужно от 3)`, "Статьи вида «reforma de baño en Elche» собирают локальные запросы. Попросите их в «Контент-плане».", local.length >= 1),
@@ -888,7 +888,7 @@ function planPrompt({ seed, lang, count, existing }) {
     `Create a content plan of ${count} blog articles for ${b.name}, a bathroom renovation company in ${b.city}, Spain.`,
     `Niche and topics: ${seed}`,
     `Language of keywords and titles: ${LANG_NAME[lang]}.`,
-    `Include local long-tail keywords with towns and neighbourhoods: ${b.areas.join(", ")}, and districts of ${b.city} (for example Playa de San Juan, Cabo de las Huertas, San Blas, Benalúa, Carolinas, Albufereta, Vistahermosa, Centro). About a third of the ideas should be local.`,
+    `Include local long-tail keywords with towns and neighbourhoods: ${b.areas.join(", ")}, and the neighbourhoods and urbanisations of ${b.city} and nearby coastal areas. About a third of the ideas should be local.`,
     "Mix search intents: local commercial (renovation + town, price, company), informational how-to, comparisons (shower tray vs bathtub, microcement vs tiles), cost questions and ideas for small bathrooms.",
     "Prefer realistic low-competition long-tail keywords that a new site can rank for. Group topics into clusters so articles can link to each other.",
     existing.length ? `Do not duplicate these existing topics: ${existing.slice(0, 80).join("; ")}` : "",
@@ -927,7 +927,7 @@ async function startPlan({ seed, lang, count }) {
   const SEED = {
     es: "reforma de baño en Alicante, precio de reformar un baño, cambiar bañera por plato de ducha, baño pequeño, microcemento, alicatado, baño adaptado para mayores, reformas en Elche, San Vicente del Raspeig, El Campello y Sant Joan d'Alacant",
     en: "bathroom renovation Alicante, bath to shower conversion, bathroom remodel cost in Spain, small bathroom ideas, renovating a holiday home on the Costa Blanca, hiring builders in Spain",
-    ru: "ремонт ванной в Аликанте, замена ванны на душ, ремонт квартиры в Испании, микроцемент, плитка, сколько стоит ремонт ванной в Испании, как найти мастеров в Аликанте",
+    ru: `ремонт ванной в ${biz().cityRu}, замена ванны на душ, ремонт квартиры в Испании, микроцемент, плитка, сколько стоит ремонт ванной в Испании, как найти мастеров в ${biz().cityRu}`,
   };
   seed = clean(seed, 600) || SEED[lang];
   const existing = [...db.posts.map((p) => p.title), ...S.plan.map((x) => x.title)];
@@ -1058,9 +1058,9 @@ const postSummary = (p) => {
 const BT = {
   es: { blog: "Blog", blogTitle: "Blog de reformas de baños", blogLead: "Consejos prácticos para reformar tu baño en {city}: materiales, plazos, precios orientativos y errores que conviene evitar.", home: "Inicio", create: "Presupuesto gratis", read: "min de lectura", toc: "Contenido", faq: "Preguntas frecuentes", related: "Sigue leyendo", tag: "Tema", ctaT: "¿Vas a reformar tu baño en {city}?", ctaP: "Visita y presupuesto gratis, precio cerrado por escrito y obra con garantía.", ctaB: "Pedir presupuesto", empty: "Pronto publicaremos artículos.", prev: "← Más recientes", next: "Anteriores →", page: "Página", nf: "Página no encontrada", nfP: "Puede que se haya eliminado o que la dirección tenga un error.", updated: "Actualizado", privacy: "Política de privacidad" },
   en: { blog: "Blog", blogTitle: "Bathroom renovation blog", blogLead: "Practical advice for renovating your bathroom in {city}: materials, timelines, guide prices and mistakes to avoid.", home: "Home", create: "Free quote", read: "min read", toc: "Contents", faq: "FAQ", related: "Read next", tag: "Topic", ctaT: "Renovating your bathroom in {city}?", ctaP: "Free visit and quote, fixed price in writing and a guarantee on the works.", ctaB: "Get a quote", empty: "Articles are coming soon.", prev: "← Newer", next: "Older →", page: "Page", nf: "Page not found", nfP: "It may have been removed or the address is mistyped.", updated: "Updated", privacy: "Privacy policy" },
-  ru: { blog: "Блог", blogTitle: "Блог о ремонте ванных комнат", blogLead: "Практические советы по ремонту ванной в Аликанте: материалы, сроки, ориентировочные цены и частые ошибки.", home: "Главная", create: "Бесплатная смета", read: "мин чтения", toc: "Содержание", faq: "Частые вопросы", related: "Читайте также", tag: "Тема", ctaT: "Планируете ремонт ванной в Аликанте?", ctaP: "Бесплатный замер и смета, фиксированная цена в договоре и гарантия на работы.", ctaB: "Получить смету", empty: "Статьи скоро появятся.", prev: "← Новее", next: "Старше →", page: "Страница", nf: "Страница не найдена", nfP: "Возможно, её удалили или адрес набран с ошибкой.", updated: "Обновлено", privacy: "Политика конфиденциальности" },
+  ru: { blog: "Блог", blogTitle: "Блог о ремонте ванных комнат", blogLead: "Практические советы по ремонту ванной в {cityRu}: материалы, сроки, ориентировочные цены и частые ошибки.", home: "Главная", create: "Бесплатная смета", read: "мин чтения", toc: "Содержание", faq: "Частые вопросы", related: "Читайте также", tag: "Тема", ctaT: "Планируете ремонт ванной в {cityRu}?", ctaP: "Бесплатный замер и смета, фиксированная цена в договоре и гарантия на работы.", ctaB: "Получить смету", empty: "Статьи скоро появятся.", prev: "← Новее", next: "Старше →", page: "Страница", nf: "Страница не найдена", nfP: "Возможно, её удалили или адрес набран с ошибкой.", updated: "Обновлено", privacy: "Политика конфиденциальности" },
 };
-const bt = (l, k) => BT[l][k].replace(/\{city\}/g, biz().city);
+const bt = (l, k) => BT[l][k].replace(/\{city\}/g, biz().city).replace(/\{cityRu\}/g, biz().cityRu);
 const fmtDate = (ts, l) => new Date(ts).toLocaleDateString(LOCALE[l], { day: "numeric", month: "long", year: "numeric" });
 const iso = (ts) => new Date(ts || Date.now()).toISOString();
 const ld = (o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`;
@@ -1333,7 +1333,7 @@ function renderHome(req, l) {
   const vizOn = v.enabled && !!falKey();
   const posts = latestFor(l);
   const meta = homeMeta(l);
-  const vars = { city: b.city, g: b.guarantee, privacy: privacyUrl(l), pShower: money(sv.shower, l), pIntegral: money(sv.integral, l) };
+  const vars = { city: b.city, cityRu: b.cityRu, g: b.guarantee, privacy: privacyUrl(l), pShower: money(sv.shower, l), pIntegral: money(sv.integral, l) };
   const fill = (s) => String(s ?? "").replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
   const dict = { ...t, lang: l, home: homeUrl(l), blogUrl: blogBase(l), "biz.name": b.name, "meta.title": meta.title, "meta.description": meta.description,
     "proj.attr": projects.length ? "" : "hidden", "viz.attr": vizOn ? "" : "hidden", "blog.attr": posts.length ? "" : "hidden" };
@@ -1560,7 +1560,7 @@ const routes = {
       const lat = parseFloat(x.lat), lng = parseFloat(x.lng);
       db.settings.biz = {
         name: clean(x.name, 80), phone: clean(x.phone, 30), whatsapp: clean(x.whatsapp, 30), email: clean(x.email, 120),
-        street: clean(x.street, 120), postal: clean(x.postal, 10), city: clean(x.city, 60), region: clean(x.region, 60),
+        street: clean(x.street, 120), postal: clean(x.postal, 10), city: clean(x.city, 60), cityRu: clean(x.cityRu, 60), region: clean(x.region, 60),
         hours: clean(x.hours, 120), openingHours: clean(x.openingHours, 120), guarantee: Math.round(clampNum(x.guarantee, 1, 10, 2)),
         gbp: /^https?:\/\//.test(String(x.gbp || "")) ? clean(x.gbp, 400) : "", nif: clean(x.nif, 20),
         areas: String(Array.isArray(x.areas) ? x.areas.join(",") : x.areas || "").split(/[,\n]/).map((a) => clean(a, 60)).filter(Boolean).slice(0, 40),
@@ -1680,6 +1680,13 @@ function dynamic(req, res, url) {
 }
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
+  // Один основной адрес: www., *.up.railway.app и т. п. → 301 на PUBLIC_URL (API не трогаем)
+  const canon = process.env.PUBLIC_URL ? (() => { try { return new URL(process.env.PUBLIC_URL); } catch { return null; } })() : null;
+  const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").split(",")[0].trim().toLowerCase();
+  if (canon && host && host !== canon.host && !/localhost|127\.0\.0\.1|\.railway\.internal$/.test(host) && (req.method === "GET" || req.method === "HEAD") && !url.pathname.startsWith("/api/")) {
+    res.writeHead(301, { location: canon.origin + url.pathname + url.search });
+    return res.end();
+  }
   const handler = routes[`${req.method} ${url.pathname}`];
   try {
     if (handler) return await handler(req, res, url);

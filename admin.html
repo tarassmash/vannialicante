@@ -225,6 +225,7 @@ code { font: 13px var(--f-mono); background: var(--soft); padding: 1px 5px; bord
           <div class="fld"><label class="label" for="bStreet">Улица и дом</label><input type="text" id="bStreet" placeholder="Calle ..., 12"></div>
           <div class="fld"><label class="label" for="bPostal">Индекс</label><input type="text" id="bPostal" placeholder="03001"></div>
           <div class="fld"><label class="label" for="bCity">Город</label><input type="text" id="bCity"></div>
+          <div class="fld"><label class="label" for="bCityRu">Город по-русски: «в …»</label><input type="text" id="bCityRu" placeholder="Торревьехе"></div>
           <div class="fld"><label class="label" for="bRegion">Провинция</label><input type="text" id="bRegion"></div>
           <div class="fld"><label class="label" for="bNif">NIF / CIF</label><input type="text" id="bNif"></div>
           <div class="fld"><label class="label" for="bGuar">Гарантия, лет</label><input type="number" id="bGuar" min="1" max="10"></div>
@@ -483,7 +484,7 @@ code { font: 13px var(--f-mono); background: var(--soft); padding: 1px 5px; bord
   }
 
   // ---------- компания ----------
-  const BF = { bName: "name", bPhone: "phone", bWa: "whatsapp", bEmail: "email", bStreet: "street", bPostal: "postal", bCity: "city", bRegion: "region", bNif: "nif", bGuar: "guarantee", bHours: "hours", bOh: "openingHours", bLat: "lat", bLng: "lng", bGbp: "gbp" };
+  const BF = { bName: "name", bPhone: "phone", bWa: "whatsapp", bEmail: "email", bStreet: "street", bPostal: "postal", bCity: "city", bCityRu: "cityRu", bRegion: "region", bNif: "nif", bGuar: "guarantee", bHours: "hours", bOh: "openingHours", bLat: "lat", bLng: "lng", bGbp: "gbp" };
   function renderBiz() {
     for (const [id, k] of Object.entries(BF)) $(id).value = cfg.biz[k] ?? "";
     $("bAreas").value = cfg.biz.areas.join(", ");
